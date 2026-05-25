@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  /* HSL Color Palette - Warm Light Theme (Paper & Clay) */
+  --bg-paper: 38 24% 94%;        /* #f4f1eb - Warm alabaster, highly eye-friendly */
+  --bg-card: 38 24% 97%;         /* #fbfaf8 - Soft linen white card */
+  --bg-card-hover: 38 24% 91%;   /* #eae5db - Soft linen grey */
+  
+  --color-clay: 28 42% 40%;      /* #a35d3d - Sophisticated warm terracotta/clay accent */
+  --color-clay-light: 28 42% 50%;
+  --color-clay-dark: 28 42% 30%;
+  
+  --text-primary: 24 15% 15%;    /* #2c2521 - Soft deep espresso, zero glare */
+  --text-muted: 28 8% 44%;       /* #79736e - Muted warm stone */
+  
+  --border-subtle: 38 15% 85%;   /* #e2ded7 - Subtly contrasting warm sand border */
+  --border-focus: 28 42% 40%;
+  
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+}
+
+@theme {
+  --font-serif: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --color-sand: hsl(28 42% 40%);
+  --color-sand-light: hsl(28 42% 50%);
+  --color-sand-dark: hsl(28 42% 30%);
+  
+  --color-obsidian: hsl(38 24% 94%);
+  --color-obsidian-card: hsl(38 24% 97%);
+  --color-obsidian-card-hover: hsl(38 24% 91%);
+  --color-border-subtle: hsl(38 15% 85%);
+}
+
+/* Base Body Override */
+body {
+  background-color: hsl(var(--bg-paper));
+  color: hsl(var(--text-primary));
+  font-family: var(--font-sans);
+}
+
+/* Custom Scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--bg-paper));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border-subtle));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--color-clay) / 0.5);
+}
+
+/* Serif Headings Helper */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+  color: hsl(var(--text-primary));
+}
+
+/* Custom Micro-Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glassmorphism Panel (Light variant) */
+.glass-panel {
+  background: rgba(251, 250, 248, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(163, 93, 61, 0.08);
+}
+
+.glass-panel:hover {
+  border-color: rgba(163, 93, 61, 0.20);
+  box-shadow: 0 8px 30px rgba(44, 37, 33, 0.05);
+}
+
+/* Elegant Text Inputs */
+.elegant-input {
+  background: rgba(244, 241, 235, 0.6);
+  border: 1px solid rgba(163, 93, 61, 0.15);
+  border-radius: 6px;
+  color: hsl(var(--text-primary));
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.elegant-input:focus {
+  outline: none;
+  border-color: hsl(var(--color-clay));
+  box-shadow: 0 0 0 2px rgba(163, 93, 61, 0.15);
+  background: rgba(251, 250, 248, 0.9);
+}
+
+/* Override prose colors in light mode */
+.prose {
+  color: hsl(var(--text-primary));
+}
+.prose strong {
+  color: hsl(var(--text-primary)) !important;
+}
+.prose h1, .prose h2, .prose h3 {
+  color: hsl(var(--text-primary)) !important;
+}
+.prose p {
+  color: hsl(24 10% 25%) !important;
+}
