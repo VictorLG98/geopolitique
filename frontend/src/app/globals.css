@@ -250,6 +250,124 @@ h1, h2, h3, h4, h5, h6 {
 .ProseMirror .text-right,
 .rich-content .text-right  { text-align: right; }
 
+/* ── H1 (used inside editor as article section hero) ─────────────────────── */
+.ProseMirror h1,
+.rich-content h1 {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 2.2rem 0 0.75rem;
+  color: hsl(var(--text-primary));
+  line-height: 1.2;
+}
+
+/* ── Task lists ──────────────────────────────────────────────────────────── */
+.ProseMirror ul[data-type='taskList'],
+.rich-content ul[data-type='taskList'] {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+}
+.ProseMirror ul[data-type='taskList'] li,
+.rich-content ul[data-type='taskList'] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.3rem 0;
+}
+.ProseMirror ul[data-type='taskList'] li > label,
+.rich-content ul[data-type='taskList'] li > label {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+.ProseMirror ul[data-type='taskList'] li > label input[type='checkbox'],
+.rich-content ul[data-type='taskList'] li > label input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: hsl(var(--color-clay));
+  cursor: pointer;
+}
+.ProseMirror ul[data-type='taskList'] li[data-checked='true'] > div,
+.rich-content ul[data-type='taskList'] li[data-checked='true'] > div {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+.ProseMirror table,
+.rich-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  overflow: auto;
+  display: block;
+}
+.ProseMirror th,
+.rich-content th {
+  background: hsl(var(--bg-paper));
+  font-weight: 700;
+  text-align: left;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid hsl(var(--border-subtle));
+  color: hsl(var(--text-primary));
+}
+.ProseMirror td,
+.rich-content td {
+  padding: 0.5rem 0.85rem;
+  border: 1px solid hsl(var(--border-subtle));
+  vertical-align: top;
+}
+.ProseMirror .selectedCell,
+.rich-content .selectedCell {
+  background: hsl(var(--color-clay) / 0.08);
+}
+.ProseMirror .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: hsl(var(--color-clay) / 0.4);
+  pointer-events: none;
+}
+.ProseMirror .tableWrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* ── Images ──────────────────────────────────────────────────────────────── */
+.ProseMirror img,
+.rich-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.25rem auto;
+  display: block;
+}
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid hsl(var(--color-clay));
+  outline-offset: 2px;
+}
+
+/* ── Highlight ───────────────────────────────────────────────────────────── */
+.ProseMirror mark,
+.rich-content mark {
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* ── Placeholder per-node ────────────────────────────────────────────────── */
+.ProseMirror p.is-editor-empty:first-child::before,
+.ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  color: hsl(var(--text-primary) / 0.35);
+  pointer-events: none;
+  float: left;
+  height: 0;
+  font-style: italic;
+}
+
 /* Override prose colors in light mode */
 .prose {
   color: hsl(var(--text-primary));
