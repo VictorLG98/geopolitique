@@ -1,8 +1,9 @@
 import os
 import resend
+import httpx
 import cloudinary
 import cloudinary.uploader
-from fastapi import FastAPI, Depends, HTTPException, Query, status, Header, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Query, Request, status, Header, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -33,6 +34,18 @@ if RESEND_API_KEY:
 CLOUDINARY_URL_ENV = os.getenv("CLOUDINARY_URL", "")
 if CLOUDINARY_URL_ENV:
     cloudinary.config(cloudinary_url=CLOUDINARY_URL_ENV)
+
+TURNSTILE_SECRET = os.getenv("TURNSTILE_SECRET_KEY", "")
+
+def verify_turnstile(token: str) -> bool:
+    if not TURNSTILE_SECRET:
+        return True  # skip if not configured
+    with httpx.Client(timeout=5) as client:
+        r = client.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={"secret": TURNSTILE_SECRET, "response": token},
+        )
+        return r.json().get("success", False)
 
 def verify_admin(authorization: str = Header(...)):
     if not authorization.startswith("Bearer ") or authorization[7:] != ADMIN_SECRET:
@@ -91,6 +104,9 @@ def get_post_detail(slug: str, db: Session = Depends(get_db)):
 
 @app.post("/api/posts/{slug}/comments", response_model=schemas.Comment)
 def create_comment(slug: str, comment_in: schemas.CommentCreate, db: Session = Depends(get_db)):
+    if TURNSTILE_SECRET and not verify_turnstile(comment_in.turnstile_token or ""):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verificación de seguridad fallida")
+
     post = db.query(models.Post).filter(models.Post.slug == slug).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")

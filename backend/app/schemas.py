@@ -8,7 +8,7 @@ class CommentBase(BaseModel):
     content: str
 
 class CommentCreate(CommentBase):
-    pass
+    turnstile_token: Optional[str] = None
 
 class Comment(CommentBase):
     id: int

@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Header from './Header';
 import Footer from './Footer';
 import RichContent from './RichContent';
 import SearchOverlay from './SearchOverlay';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { PostDetail, Comment, createComment } from '@/lib/api';
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 interface PostContainerProps {
   post: PostDetail;
@@ -22,6 +25,8 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef<TurnstileInstance>(undefined);
 
   // Sync scroll height to update top reading progress bar
   useEffect(() => {
@@ -47,12 +52,17 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setSubmitStatus('error');
+      setErrorMessage('Completa la verificación de seguridad.');
+      return;
+    }
 
     setSubmitStatus('loading');
     const finalAuthor = author.trim() || 'Lector Anónimo';
 
     try {
-      const newComment = await createComment(post.slug, finalAuthor, commentText.trim());
+      const newComment = await createComment(post.slug, finalAuthor, commentText.trim(), turnstileToken || undefined);
       
       // Update local comments state dynamically (putting newest on top)
       setComments((prev) => [newComment, ...prev]);
@@ -60,10 +70,13 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
       setSubmitStatus('success');
       setCommentText('');
       setAuthor('');
+      setTurnstileToken('');
+      turnstileRef.current?.reset();
       setTimeout(() => setSubmitStatus('idle'), 3000);
     } catch (err: any) {
       setSubmitStatus('error');
-      // If backend is offline, support dynamic optimistic locally added comment so the user can test the comment functionality!
+      setTurnstileToken('');
+      turnstileRef.current?.reset();
       if (err.message.includes('fetch') || err.message.includes('API')) {
         const optimisticComment: Comment = {
           id: Math.floor(Math.random() * 10000),
@@ -174,10 +187,21 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
               />
             </div>
 
+            {TURNSTILE_SITE_KEY && (
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+                onError={() => setTurnstileToken('')}
+                options={{ theme: 'light', language: 'es' }}
+              />
+            )}
+
             <div className="flex items-center justify-between pt-2">
               <button
                 type="submit"
-                disabled={submitStatus === 'loading' || !commentText.trim()}
+                disabled={submitStatus === 'loading' || !commentText.trim() || (!!TURNSTILE_SITE_KEY && !turnstileToken)}
                 className="px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-sand text-white hover:bg-sand-light active:scale-95 transition-all duration-200 disabled:opacity-40"
               >
                 {submitStatus === 'loading' ? 'Enviando...' : 'Publicar comentario'}
