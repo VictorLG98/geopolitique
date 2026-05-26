@@ -19,9 +19,10 @@ export const metadata: Metadata = {
   description: "Un blog minimalista dedicado al análisis profundo de la seguridad global, recursos estratégicos, tecnología geopolítica y las nuevas fronteras comerciales del siglo XXI.",
   authors: [{ name: "Geopolitiqué Team" }],
   keywords: ["geopolitica", "seguridad", "semiconductores", "litio", "artico", "analisis", "relaciones internacionales"],
-  icons: {
-    icon: "/favicon.ico",
-  },
+  icons: [
+    { rel: 'icon', url: '/favicon.ico', type: 'image/x-icon' },
+    { rel: 'shortcut icon', url: '/favicon.ico', type: 'image/x-icon' },
+  ],
 };
 
 export default function RootLayout({
