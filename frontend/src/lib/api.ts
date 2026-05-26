@@ -172,3 +172,7 @@ export async function getNewsletterSubscribers(token: string): Promise<Newslette
 export async function adminDeleteSubscriber(token: string, id: number): Promise<void> {
   return adminFetch<void>(`/api/admin/newsletter/${id}`, token, { method: 'DELETE' });
 }
+
+export async function adminNotifySubscribers(token: string, slug: string): Promise<{ sent: number; message: string }> {
+  return adminFetch<{ sent: number; message: string }>(`/api/admin/posts/${slug}/notify`, token, { method: 'POST' });
+}

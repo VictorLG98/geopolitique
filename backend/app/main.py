@@ -1,4 +1,5 @@
 import os
+import resend
 from fastapi import FastAPI, Depends, HTTPException, Query, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -19,6 +20,12 @@ except Exception as e:
     print(f"Error seeding database on startup: {e}")
 
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+RESEND_FROM = os.getenv("RESEND_FROM", "Geopolitiqué <onboarding@resend.dev>")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://geopolitique.vercel.app")
+
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
 
 def verify_admin(authorization: str = Header(...)):
     if not authorization.startswith("Bearer ") or authorization[7:] != ADMIN_SECRET:
@@ -196,3 +203,87 @@ def delete_subscriber(subscriber_id: int, db: Session = Depends(get_db), _: str 
 
     db.delete(sub)
     db.commit()
+
+# ── Admin: Newsletter broadcast ───────────────────────────────────────────────
+
+@app.post("/api/admin/posts/{slug}/notify", response_model=schemas.NotifyResult)
+def notify_subscribers(slug: str, db: Session = Depends(get_db), _: str = Depends(verify_admin)):
+    if not RESEND_API_KEY:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Resend no configurado")
+
+    post = db.query(models.Post).filter(models.Post.slug == slug).first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post no encontrado")
+
+    subscribers = db.query(models.NewsletterSubscriber).all()
+    if not subscribers:
+        return {"sent": 0, "message": "No hay suscriptores"}
+
+    emails = [s.email for s in subscribers]
+    post_url = f"{FRONTEND_URL}/posts/{post.slug}"
+    category_label = post.category or "General"
+    image_block = (
+        f'<img src="{post.image_url}" alt="" style="width:100%;max-height:280px;object-fit:cover;border-radius:8px;margin-bottom:24px;" />'
+        if post.image_url else ""
+    )
+
+    html_body = f"""
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /></head>
+<body style="margin:0;padding:0;background:#f4f1eb;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1eb;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fbfaf8;border-radius:12px;overflow:hidden;border:1px solid #e2ded7;max-width:600px;">
+
+        <!-- Header -->
+        <tr><td style="background:#2c2521;padding:24px 36px;">
+          <p style="margin:0;font-family:Georgia,serif;font-size:20px;font-weight:700;color:#c2a175;letter-spacing:-0.02em;">
+            Geopolitiqué
+          </p>
+          <p style="margin:4px 0 0;font-size:11px;color:#79736e;letter-spacing:0.1em;text-transform:uppercase;font-family:system-ui,sans-serif;">
+            Circular de análisis geopolítico
+          </p>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td style="padding:36px 36px 28px;">
+          <p style="margin:0 0 20px;font-size:11px;color:#a35d3d;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;font-family:system-ui,sans-serif;">
+            Nuevo artículo · {category_label} · {post.read_time} min
+          </p>
+          {image_block}
+          <h1 style="margin:0 0 16px;font-family:Georgia,serif;font-size:26px;font-weight:800;color:#2c2521;line-height:1.25;letter-spacing:-0.02em;">
+            {post.title}
+          </h1>
+          <p style="margin:0 0 28px;font-size:15px;color:#4a443f;line-height:1.7;font-family:system-ui,sans-serif;">
+            {post.summary}
+          </p>
+          <a href="{post_url}" style="display:inline-block;background:#a35d3d;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:8px;font-size:14px;font-weight:700;font-family:system-ui,sans-serif;letter-spacing:0.02em;">
+            Leer artículo completo →
+          </a>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="padding:20px 36px 28px;border-top:1px solid #e2ded7;">
+          <p style="margin:0;font-size:11px;color:#79736e;font-family:system-ui,sans-serif;line-height:1.6;">
+            Recibes este correo porque te suscribiste a la newsletter de Geopolitiqué.<br/>
+            <a href="{FRONTEND_URL}" style="color:#a35d3d;text-decoration:none;">Visitar el blog</a>
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
+"""
+
+    params: resend.Emails.SendParams = {
+        "from": RESEND_FROM,
+        "to": emails,
+        "subject": f"Nuevo artículo: {post.title}",
+        "html": html_body,
+    }
+    resend.Emails.send(params)
+
+    return {"sent": len(emails), "message": f"Notificación enviada a {len(emails)} suscriptor{'es' if len(emails) != 1 else ''}"}

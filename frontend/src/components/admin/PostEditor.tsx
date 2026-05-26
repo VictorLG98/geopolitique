@@ -6,7 +6,7 @@ import AdminShell from './AdminShell';
 import RichEditor from './RichEditor';
 import RichContent from '@/components/RichContent';
 import { useAuth } from '@/lib/auth-context';
-import { adminCreatePost, adminUpdatePost, PostCreateInput } from '@/lib/api';
+import { adminCreatePost, adminUpdatePost, adminNotifySubscribers, PostCreateInput } from '@/lib/api';
 
 const CATEGORIES = ['Seguridad', 'Tecnología', 'Economía', 'Política', 'General'];
 const SUMMARY_MAX = 1000;
@@ -59,6 +59,8 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
   const [splitView, setSplitView]         = useState(false);
   const [mobilePreview, setMobilePreview] = useState(false);
   const [saving, setSaving]               = useState(false);
+  const [notify, setNotify]               = useState(false);
+  const [notifyStatus, setNotifyStatus]   = useState('');
   const [error, setError]                 = useState('');
   const [hasDraft, setHasDraft]           = useState(false);
   const [lastSaved, setLastSaved]         = useState<Date | null>(null);
@@ -147,12 +149,25 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     };
 
     try {
+      let savedSlug = slug;
       if (mode === 'create') {
-        await adminCreatePost(token, payload);
+        const created = await adminCreatePost(token, payload);
+        savedSlug = created.slug;
         localStorage.removeItem(DRAFT_KEY);
       } else {
         await adminUpdatePost(token, initialSlug!, payload);
+        savedSlug = initialSlug!;
       }
+
+      if (notify) {
+        try {
+          const result = await adminNotifySubscribers(token, savedSlug);
+          setNotifyStatus(result.message);
+        } catch {
+          setNotifyStatus('Artículo guardado, pero falló el envío de la newsletter.');
+        }
+      }
+
       router.push('/admin/posts');
       router.refresh();
     } catch (err: unknown) {
@@ -412,6 +427,32 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               )}
             </p>
           </div>
+
+          {/* Newsletter notify */}
+          <label className="flex items-center gap-3 px-4 py-3 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl cursor-pointer hover:border-[hsl(28,42%,40%)]/40 transition-colors select-none">
+            <input
+              type="checkbox"
+              checked={notify}
+              onChange={(e) => setNotify(e.target.checked)}
+              className="w-4 h-4 rounded accent-[hsl(28,42%,40%)]"
+            />
+            <div>
+              <span className="text-sm font-semibold text-[hsl(24,15%,15%)]">
+                Notificar a suscriptores de la newsletter
+              </span>
+              <p className="text-xs text-[hsl(28,8%,44%)] mt-0.5">
+                Se enviará un correo con el título y resumen del artículo al publicar.
+              </p>
+            </div>
+            <svg className="w-4 h-4 text-[hsl(28,42%,40%)] ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </label>
+
+          {notifyStatus && (
+            <p className="text-xs text-[hsl(28,42%,40%)] font-medium">{notifyStatus}</p>
+          )}
 
           {/* Action buttons */}
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-[hsl(38,15%,85%)]">
