@@ -68,10 +68,10 @@ export async function getPostDetail(slug: string): Promise<PostDetail> {
   });
 }
 
-export async function createComment(slug: string, author: string, content: string): Promise<Comment> {
+export async function createComment(slug: string, author: string, content: string, turnstileToken?: string): Promise<Comment> {
   return fetchAPI<Comment>(`/api/posts/${slug}/comments`, {
     method: 'POST',
-    body: JSON.stringify({ author, content }),
+    body: JSON.stringify({ author, content, turnstile_token: turnstileToken }),
   });
 }
 
