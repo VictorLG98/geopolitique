@@ -90,3 +90,7 @@ class AdminStats(BaseModel):
     posts: int
     comments: int
     subscribers: int
+
+class NotifyResult(BaseModel):
+    sent: int
+    message: str
