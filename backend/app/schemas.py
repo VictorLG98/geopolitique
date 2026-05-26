@@ -94,3 +94,7 @@ class AdminStats(BaseModel):
 class NotifyResult(BaseModel):
     sent: int
     message: str
+
+class UploadResult(BaseModel):
+    url: str
+    public_id: str
