@@ -6,7 +6,7 @@ import AdminShell from './AdminShell';
 import RichEditor from './RichEditor';
 import RichContent from '@/components/RichContent';
 import { useAuth } from '@/lib/auth-context';
-import { adminCreatePost, adminUpdatePost, adminNotifySubscribers, PostCreateInput } from '@/lib/api';
+import { adminCreatePost, adminUpdatePost, adminNotifySubscribers, adminUploadImage, PostCreateInput } from '@/lib/api';
 
 const CATEGORIES = ['Seguridad', 'Tecnología', 'Economía', 'Política', 'General'];
 const SUMMARY_MAX = 1000;
@@ -61,9 +61,12 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
   const [saving, setSaving]               = useState(false);
   const [notify, setNotify]               = useState(false);
   const [notifyStatus, setNotifyStatus]   = useState('');
+  const [imgUploading, setImgUploading]   = useState(false);
   const [error, setError]                 = useState('');
   const [hasDraft, setHasDraft]           = useState(false);
   const [lastSaved, setLastSaved]         = useState<Date | null>(null);
+
+  const imgFileRef = useRef<HTMLInputElement>(null);
 
   // Check for saved draft on mount (create mode only)
   useEffect(() => {
@@ -105,6 +108,24 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  // ── Featured image upload ────────────────────────────────────────────────
+
+  async function handleFeaturedImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !token) return;
+    setImgUploading(true);
+    setImgOk(false);
+    try {
+      const { url } = await adminUploadImage(token, file);
+      setImageUrl(url);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al subir la imagen');
+    } finally {
+      setImgUploading(false);
+      if (imgFileRef.current) imgFileRef.current.value = '';
+    }
+  }
+
   // ── Draft helpers ────────────────────────────────────────────────────────
 
   function restoreDraft() {
@@ -130,7 +151,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
 
   // ── Submit / save ────────────────────────────────────────────────────────
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!token) return;
 
@@ -341,13 +362,41 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[hsl(24,15%,15%)] mb-1.5">URL imagen destacada</label>
+              <label className="block text-sm font-semibold text-[hsl(24,15%,15%)] mb-1.5">Imagen destacada</label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => { setImageUrl(e.target.value); setImgOk(false); }}
+                  placeholder="https://... o sube un archivo"
+                  className="elegant-input flex-1 px-4 py-2.5 text-sm min-w-0"
+                />
+                <button
+                  type="button"
+                  onClick={() => imgFileRef.current?.click()}
+                  disabled={imgUploading}
+                  title="Subir imagen a Cloudinary"
+                  className="shrink-0 px-3 py-2.5 rounded-lg border border-[hsl(38,15%,85%)] bg-[hsl(38,24%,97%)] hover:border-[hsl(28,42%,40%)]/40 text-[hsl(28,8%,44%)] hover:text-[hsl(28,42%,40%)] transition-all disabled:opacity-50"
+                >
+                  {imgUploading ? (
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
               <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => { setImageUrl(e.target.value); setImgOk(false); }}
-                placeholder="https://images.unsplash.com/..."
-                className="elegant-input w-full px-4 py-2.5 text-sm"
+                ref={imgFileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFeaturedImageUpload}
               />
             </div>
           </div>
@@ -386,7 +435,11 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
             {splitView ? (
               <div className="grid grid-cols-2 border border-[hsl(38,15%,85%)] rounded-xl overflow-hidden">
                 <div className="border-r border-[hsl(38,15%,85%)]">
-                  <RichEditor value={content} onChange={setContent} />
+                  <RichEditor
+                    value={content}
+                    onChange={setContent}
+                    onUploadImage={token ? (file) => adminUploadImage(token, file).then(r => r.url) : undefined}
+                  />
                 </div>
                 <div className="bg-[hsl(38,24%,97%)] overflow-y-auto" style={{ maxHeight: 600 }}>
                   <p className="text-[10px] uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold px-6 pt-4 pb-2">
@@ -402,7 +455,11 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 <RichContent content={content} />
               </div>
             ) : (
-              <RichEditor value={content} onChange={setContent} />
+              <RichEditor
+                    value={content}
+                    onChange={setContent}
+                    onUploadImage={token ? (file) => adminUploadImage(token, file).then(r => r.url) : undefined}
+                  />
             )}
 
             {/* Keyboard shortcut hints */}

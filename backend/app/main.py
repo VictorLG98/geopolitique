@@ -1,6 +1,8 @@
 import os
 import resend
-from fastapi import FastAPI, Depends, HTTPException, Query, status, Header
+import cloudinary
+import cloudinary.uploader
+from fastapi import FastAPI, Depends, HTTPException, Query, status, Header, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -26,6 +28,11 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "https://geopolitique.vercel.app")
 
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
+
+# Cloudinary — SDK picks up CLOUDINARY_URL automatically if set
+CLOUDINARY_URL_ENV = os.getenv("CLOUDINARY_URL", "")
+if CLOUDINARY_URL_ENV:
+    cloudinary.config(cloudinary_url=CLOUDINARY_URL_ENV)
 
 def verify_admin(authorization: str = Header(...)):
     if not authorization.startswith("Bearer ") or authorization[7:] != ADMIN_SECRET:
@@ -287,3 +294,24 @@ def notify_subscribers(slug: str, db: Session = Depends(get_db), _: str = Depend
     resend.Emails.send(params)
 
     return {"sent": len(emails), "message": f"Notificación enviada a {len(emails)} suscriptor{'es' if len(emails) != 1 else ''}"}
+
+# ── Admin: Image upload (Cloudinary) ─────────────────────────────────────────
+
+@app.post("/api/admin/upload", response_model=schemas.UploadResult)
+async def upload_image(file: UploadFile = File(...), _: str = Depends(verify_admin)):
+    if not CLOUDINARY_URL_ENV:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Cloudinary no configurado")
+
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El archivo debe ser una imagen")
+
+    contents = await file.read()
+    result = cloudinary.uploader.upload(
+        contents,
+        folder="geopolitique",
+        use_filename=True,
+        unique_filename=True,
+        overwrite=False,
+        transformation=[{"quality": "auto", "fetch_format": "auto"}],
+    )
+    return {"url": result["secure_url"], "public_id": result["public_id"]}

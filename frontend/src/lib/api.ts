@@ -176,3 +176,19 @@ export async function adminDeleteSubscriber(token: string, id: number): Promise<
 export async function adminNotifySubscribers(token: string, slug: string): Promise<{ sent: number; message: string }> {
   return adminFetch<{ sent: number; message: string }>(`/api/admin/posts/${slug}/notify`, token, { method: 'POST' });
 }
+
+export async function adminUploadImage(token: string, file: File): Promise<{ url: string; public_id: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const url = `${API_BASE_URL}/api/admin/upload`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.detail || 'Error al subir la imagen');
+  }
+  return response.json();
+}
