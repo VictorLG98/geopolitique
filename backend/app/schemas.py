@@ -18,6 +18,20 @@ class Comment(CommentBase):
     class Config:
         from_attributes = True
 
+class PostBasic(BaseModel):
+    id: int
+    slug: str
+    title: str
+
+    class Config:
+        from_attributes = True
+
+class CommentDetail(Comment):
+    post: PostBasic
+
+    class Config:
+        from_attributes = True
+
 # Post Schemas
 class PostBase(BaseModel):
     slug: str
@@ -29,7 +43,16 @@ class PostBase(BaseModel):
     image_url: Optional[str] = None
 
 class PostCreate(PostBase):
-    pass
+    published_at: Optional[datetime] = None
+
+class PostUpdate(BaseModel):
+    title: Optional[str] = None
+    summary: Optional[str] = None
+    content: Optional[str] = None
+    category: Optional[str] = None
+    read_time: Optional[int] = None
+    image_url: Optional[str] = None
+    published_at: Optional[datetime] = None
 
 class Post(PostBase):
     id: int
@@ -55,3 +78,15 @@ class NewsletterResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+# Admin Schemas
+class AdminLogin(BaseModel):
+    secret: str
+
+class AdminLoginResponse(BaseModel):
+    token: str
+
+class AdminStats(BaseModel):
+    posts: int
+    comments: int
+    subscribers: int
