@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminShell from './AdminShell';
-import Markdown from '@/components/Markdown';
+import RichEditor from './RichEditor';
+import RichContent from '@/components/RichContent';
 import { useAuth } from '@/lib/auth-context';
 import { adminCreatePost, adminUpdatePost, PostCreateInput } from '@/lib/api';
 
@@ -28,26 +29,23 @@ function slugify(text: string): string {
     .trim();
 }
 
-function calcReadTime(text: string): number {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
+function stripHtml(html: string): string {
+  return html.replace(/(<([^>]+)>)/gi, ' ');
+}
+
+function calcReadTime(html: string): number {
+  const words = stripHtml(html).trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
 
-const TOOLBAR = [
-  { label: 'H2',     title: 'Título de sección',  block: true,  before: '## ' },
-  { label: 'H3',     title: 'Subtítulo',           block: true,  before: '### ' },
-  { label: 'B',      title: 'Negrita  Ctrl+B',     block: false, before: '**',  after: '**',  placeholder: 'texto' },
-  { label: 'I',      title: 'Cursiva  Ctrl+I',     block: false, before: '*',   after: '*',   placeholder: 'texto' },
-  { label: '> Cita', title: 'Cita',                block: true,  before: '> ' },
-  { label: '• Lista',title: 'Lista de viñetas',    block: true,  before: '* ' },
-  { label: '`…`',    title: 'Código inline',       block: false, before: '`',   after: '`',   placeholder: 'código' },
-  { label: '```',    title: 'Bloque de código',    block: false, before: '```\n', after: '\n```', placeholder: 'código' },
-] as const;
+function isContentEmpty(html: string): boolean {
+  return stripHtml(html).trim() === '';
+}
 
 export default function PostEditor({ mode, initialSlug, initialData }: PostEditorProps) {
   const { token } = useAuth();
   const router = useRouter();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [title, setTitle]       = useState(initialData?.title     ?? '');
   const [slug, setSlug]         = useState(initialData?.slug      ?? '');
@@ -93,6 +91,18 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     if (content) setReadTime(calcReadTime(content));
   }, [content]);
 
+  // Ctrl+S — submit form from anywhere
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   // ── Draft helpers ────────────────────────────────────────────────────────
 
   function restoreDraft() {
@@ -116,67 +126,17 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     setHasDraft(false);
   }
 
-  // ── Markdown insertion helpers ───────────────────────────────────────────
-
-  function insertInline(before: string, after: string, placeholder: string) {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const { selectionStart: s, selectionEnd: e } = ta;
-    const selected = content.slice(s, e) || placeholder;
-    const next = content.slice(0, s) + before + selected + after + content.slice(e);
-    setContent(next);
-    setTimeout(() => {
-      ta.focus();
-      ta.setSelectionRange(s + before.length, s + before.length + selected.length);
-    }, 0);
-  }
-
-  function insertBlock(prefix: string) {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const { selectionStart: s } = ta;
-    const lineStart = content.lastIndexOf('\n', s - 1) + 1;
-    const next = content.slice(0, lineStart) + prefix + content.slice(lineStart);
-    setContent(next);
-    setTimeout(() => {
-      ta.focus();
-      ta.setSelectionRange(s + prefix.length, s + prefix.length);
-    }, 0);
-  }
-
-  function handleToolbar(action: typeof TOOLBAR[number]) {
-    if (action.block) {
-      insertBlock(action.before);
-    } else {
-      insertInline(action.before, action.after ?? '', action.placeholder ?? 'texto');
-    }
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    const mod = e.ctrlKey || e.metaKey;
-    if (mod && e.key === 'b') { e.preventDefault(); insertInline('**', '**', 'texto'); return; }
-    if (mod && e.key === 'i') { e.preventDefault(); insertInline('*', '*', 'texto'); return; }
-    if (mod && e.key === 's') { e.preventDefault(); submitForm(); return; }
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const ta = e.currentTarget;
-      const s = ta.selectionStart;
-      setContent(c => c.slice(0, s) + '  ' + c.slice(ta.selectionEnd));
-      setTimeout(() => ta.setSelectionRange(s + 2, s + 2), 0);
-    }
-  }
-
   // ── Submit / save ────────────────────────────────────────────────────────
-
-  function submitForm() {
-    // Programmatically submit the form to trigger browser validation
-    const form = textareaRef.current?.closest('form') as HTMLFormElement | null;
-    form?.requestSubmit();
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!token) return;
+
+    if (isContentEmpty(content)) {
+      setError('El contenido no puede estar vacío.');
+      return;
+    }
+
     setError('');
     setSaving(true);
 
@@ -202,48 +162,9 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     }
   }
 
-  // ── Shared editor panel (toolbar + textarea) ─────────────────────────────
-
-  const editorArea = (
-    <div>
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 px-2 py-1.5 bg-[hsl(38,24%,91%)] border border-[hsl(38,15%,85%)] rounded-t-xl">
-        {TOOLBAR.map((action) => (
-          <button
-            key={action.label}
-            type="button"
-            title={action.title}
-            onClick={() => handleToolbar(action)}
-            className="px-2 py-1 text-xs font-mono font-semibold rounded text-[hsl(24,15%,15%)] hover:bg-[hsl(28,42%,40%)]/15 hover:text-[hsl(28,42%,30%)] transition-colors select-none"
-          >
-            {action.label}
-          </button>
-        ))}
-        {lastSaved && (
-          <span className="ml-auto text-[10px] text-[hsl(28,8%,44%)] pr-1 font-mono">
-            guardado {lastSaved.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-          </span>
-        )}
-      </div>
-      {/* Textarea */}
-      <textarea
-        ref={textareaRef}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        onKeyDown={handleKeyDown}
-        required
-        rows={22}
-        placeholder={'## Introducción\n\nEscribe el contenido aquí...\n\n### Sección\n\n**Negrita**, *cursiva* y `código`.'}
-        className="elegant-input w-full px-4 py-3 text-sm font-mono leading-relaxed resize-y rounded-t-none border-t-0"
-        style={{ minHeight: '400px' }}
-        spellCheck
-      />
-    </div>
-  );
-
   // ── Render ───────────────────────────────────────────────────────────────
 
-  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+  const wordCount = stripHtml(content).trim().split(/\s+/).filter(Boolean).length;
 
   return (
     <AdminShell>
@@ -316,7 +237,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
 
           {/* Title + Slug */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -440,32 +361,33 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
           <div>
             <div className="flex items-baseline justify-between mb-1.5">
               <label className="text-sm font-semibold text-[hsl(24,15%,15%)]">
-                Contenido (Markdown) <span className="text-red-500">*</span>
+                Contenido <span className="text-red-500">*</span>
               </label>
               <span className="text-xs text-[hsl(28,8%,44%)] tabular-nums">
                 {wordCount} palabras · {readTime} min lectura
               </span>
             </div>
 
-            {/* Split view (desktop) */}
             {splitView ? (
               <div className="grid grid-cols-2 border border-[hsl(38,15%,85%)] rounded-xl overflow-hidden">
-                <div className="border-r border-[hsl(38,15%,85%)]">{editorArea}</div>
+                <div className="border-r border-[hsl(38,15%,85%)]">
+                  <RichEditor value={content} onChange={setContent} />
+                </div>
                 <div className="bg-[hsl(38,24%,97%)] overflow-y-auto" style={{ maxHeight: 600 }}>
                   <p className="text-[10px] uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold px-6 pt-4 pb-2">
                     Vista previa
                   </p>
                   <div className="px-6 pb-6">
-                    <Markdown content={content} />
+                    <RichContent content={content} />
                   </div>
                 </div>
               </div>
             ) : mobilePreview ? (
               <div className="min-h-64 p-6 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl">
-                <Markdown content={content} />
+                <RichContent content={content} />
               </div>
             ) : (
-              editorArea
+              <RichEditor value={content} onChange={setContent} />
             )}
 
             {/* Keyboard shortcut hints */}
@@ -473,8 +395,8 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               {[
                 ['Ctrl+B', 'negrita'],
                 ['Ctrl+I', 'cursiva'],
+                ['Ctrl+Z', 'deshacer'],
                 ['Ctrl+S', 'guardar'],
-                ['Tab', 'indentar'],
               ].map(([key, label]) => (
                 <span key={key} className="mr-3 inline-block">
                   <kbd className="px-1.5 py-0.5 bg-[hsl(38,24%,91%)] border border-[hsl(38,15%,85%)] rounded text-[10px] font-mono">
@@ -483,6 +405,11 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                   {' '}{label}
                 </span>
               ))}
+              {lastSaved && (
+                <span className="ml-2 text-[hsl(28,8%,44%)] font-mono">
+                  · guardado {lastSaved.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
             </p>
           </div>
 

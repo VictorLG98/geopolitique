@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from './Header';
 import Footer from './Footer';
-import Markdown from './Markdown';
+import RichContent from './RichContent';
 import SearchOverlay from './SearchOverlay';
 import { PostDetail, Comment, createComment } from '@/lib/api';
 
@@ -126,7 +126,7 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
 
         {/* Main Post Article Body */}
         <article className="animate-fade-in">
-          <Markdown content={post.content} />
+          <RichContent content={post.content} />
         </article>
 
         {/* Comments Section */}
