@@ -3,7 +3,11 @@
     "allow": [
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(curl -s http://localhost:3000/)",
-      "Bash(pip install *)"
+      "Bash(pip install *)",
+      "Bash(node -e \"const t = require\\('@tiptap/suggestion'\\); console.log\\(Object.keys\\(t\\)\\)\")",
+      "Bash(node -e \"const t = require\\('@tiptap/extension-task-list'\\); console.log\\(Object.keys\\(t\\)\\); const t2 = require\\('@tiptap/extension-task-item'\\); console.log\\(Object.keys\\(t2\\)\\)\")",
+      "Bash(node -e \"const t = require\\('@tiptap/extension-table'\\); console.log\\(Object.keys\\(t\\)\\); const t2 = require\\('@tiptap/extension-highlight'\\); console.log\\(Object.keys\\(t2\\)\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }
