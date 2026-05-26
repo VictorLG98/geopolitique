@@ -42,6 +42,10 @@ export async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): 
     throw new Error(errorData.detail || 'Ha ocurrido un error al conectar con la API.');
   }
 
+  if (response.status === 204 || response.headers.get('content-length') === '0') {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
 
