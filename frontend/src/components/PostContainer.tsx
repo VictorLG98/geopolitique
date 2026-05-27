@@ -111,10 +111,10 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
       <main className="flex-grow mx-auto max-w-4xl w-full px-4 py-8 sm:px-6 lg:px-8 space-y-12">
         
         {/* Navigation Breadcrumb */}
-        <nav className="text-xs uppercase tracking-widest text-slate-500 font-bold flex items-center gap-2 select-none animate-fade-in">
+        <nav className="text-xs uppercase tracking-widest text-slate-600 font-bold flex items-center gap-2 select-none animate-fade-in">
           <Link href="/" className="hover:text-sand transition-colors">Inicio</Link>
           <span>/</span>
-          <span className="text-slate-400 font-semibold">{post.category}</span>
+          <span className="text-slate-600 font-semibold">{post.category}</span>
         </nav>
 
         {/* Post Heading Hero */}
@@ -123,14 +123,14 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
             <span className="px-2.5 py-0.5 rounded-full font-bold uppercase text-sand bg-sand/5 border border-sand/10">
               {post.category}
             </span>
-            <span className="text-slate-500 font-semibold">{post.read_time} minutos de lectura</span>
+            <span className="text-slate-600 font-semibold">{post.read_time} minutos de lectura</span>
           </div>
 
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
             {post.title}
           </h1>
 
-          <div className="flex items-center gap-3 text-sm text-slate-500 font-sans font-semibold">
+          <div className="flex items-center gap-3 text-sm text-slate-600 font-sans font-semibold">
             <span>Redacción Geopolitiqué</span>
             <span>•</span>
             <span>{formattedDate}</span>
@@ -146,7 +146,7 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
         <section className="border-t border-border-subtle pt-12 space-y-8 animate-fade-in">
           <div className="flex items-center gap-3">
             <h2 className="font-serif text-2xl font-bold text-slate-900">Comentarios</h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-obsidian-card border border-border-subtle text-slate-500">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-obsidian-card border border-border-subtle text-slate-600">
               {comments.length}
             </span>
           </div>
@@ -159,7 +159,7 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs text-slate-500 uppercase tracking-widest font-semibold block">Nombre</label>
+                <label className="text-xs text-slate-600 uppercase tracking-widest font-semibold block">Nombre</label>
                 <input
                   type="text"
                   placeholder="Lector Anónimo"
@@ -172,7 +172,7 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-500 uppercase tracking-widest font-semibold block">Comentario</label>
+              <label className="text-xs text-slate-600 uppercase tracking-widest font-semibold block">Comentario</label>
               <textarea
                 placeholder="Escriba su opinión..."
                 value={commentText}
@@ -239,7 +239,7 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
                     <span className="font-bold text-slate-800">
                       {comm.author}
                     </span>
-                    <span className="text-slate-500 font-sans font-semibold">
+                    <span className="text-slate-600 font-sans font-semibold">
                       {new Date(comm.created_at).toLocaleDateString('es-ES', {
                         day: 'numeric',
                         month: 'short',
@@ -254,7 +254,7 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 border border-dashed border-border-subtle rounded-xl text-slate-500 text-sm">
+              <div className="text-center py-8 border border-dashed border-border-subtle rounded-xl text-slate-600 text-sm">
                 Aún no hay comentarios en esta publicación. Sea el primero en opinar.
               </div>
             )}

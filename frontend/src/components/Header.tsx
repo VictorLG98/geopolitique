@@ -31,15 +31,15 @@ export default function Header({ onSearchClick }: HeaderProps) {
               Inicio
             </Link>
             <span className="text-slate-300">/</span>
-            <Link href="/?category=Seguridad" className="text-slate-500 hover:text-sand transition-colors duration-200">
+            <Link href="/?category=Seguridad" className="text-slate-400 hover:text-sand transition-colors duration-200">
               Seguridad
             </Link>
             <span className="text-slate-300">/</span>
-            <Link href="/?category=Tecnologia" className="text-slate-500 hover:text-sand transition-colors duration-200">
+            <Link href="/?category=Tecnologia" className="text-slate-400 hover:text-sand transition-colors duration-200">
               Tecnología
             </Link>
             <span className="text-slate-300">/</span>
-            <Link href="/?category=Economia" className="text-slate-500 hover:text-sand transition-colors duration-200">
+            <Link href="/?category=Economia" className="text-slate-400 hover:text-sand transition-colors duration-200">
               Economía
             </Link>
           </nav>
@@ -49,7 +49,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             {onSearchClick && (
               <button
                 onClick={onSearchClick}
-                className="flex items-center justify-center p-2 rounded-full border border-border-subtle text-slate-500 hover:text-sand hover:border-sand/30 bg-obsidian-card-hover/40 hover:bg-obsidian-card-hover/80 transition-all duration-300 group focus:outline-none"
+                className="flex items-center justify-center p-2 rounded-full border border-border-subtle text-slate-400 hover:text-sand hover:border-sand/30 bg-obsidian-card-hover/40 hover:bg-obsidian-card-hover/80 transition-all duration-300 group focus:outline-none"
                 aria-label="Buscar artículo"
               >
                 <svg

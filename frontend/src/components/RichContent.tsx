@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import DOMPurify from 'dompurify';
+import React, { useState, useEffect } from 'react';
 import Markdown from './Markdown';
 
 interface RichContentProps {
@@ -10,23 +9,30 @@ interface RichContentProps {
 
 export default function RichContent({ content }: RichContentProps) {
   const isHtml = content.trimStart().startsWith('<');
+  const [sanitized, setSanitized] = useState<string | null>(null);
 
-  if (isHtml) {
-    const sanitized =
-      typeof window !== 'undefined'
-        ? DOMPurify.sanitize(content, {
-            USE_PROFILES: { html: true },
-            ADD_ATTR: ['target', 'rel'],
-          })
-        : content;
+  useEffect(() => {
+    if (!isHtml) return;
+    import('dompurify').then(({ default: DOMPurify }) => {
+      setSanitized(
+        DOMPurify.sanitize(content, {
+          USE_PROFILES: { html: true },
+          ADD_ATTR: ['target', 'rel'],
+        })
+      );
+    });
+  }, [content, isHtml]);
 
-    return (
-      <div
-        className="rich-content"
-        dangerouslySetInnerHTML={{ __html: sanitized }}
-      />
-    );
+  if (!isHtml) return <Markdown content={content} />;
+
+  if (sanitized === null) {
+    return <div className="rich-content min-h-[200px] animate-pulse" aria-busy="true" />;
   }
 
-  return <Markdown content={content} />;
+  return (
+    <div
+      className="rich-content"
+      dangerouslySetInnerHTML={{ __html: sanitized }}
+    />
+  );
 }

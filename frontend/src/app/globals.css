@@ -6,15 +6,15 @@
   --bg-card: 38 24% 97%;         /* #fbfaf8 - Soft linen white card */
   --bg-card-hover: 38 24% 91%;   /* #eae5db - Soft linen grey */
   
-  --color-clay: 28 42% 40%;      /* #a35d3d - Sophisticated warm terracotta/clay accent */
-  --color-clay-light: 28 42% 50%;
-  --color-clay-dark: 28 42% 30%;
-  
+  --color-clay: 28 42% 36%;      /* #82593a - WCAG AA ≥4.5:1 on paper bg */
+  --color-clay-light: 28 42% 46%;
+  --color-clay-dark: 28 42% 26%;
+
   --text-primary: 24 15% 15%;    /* #2c2521 - Soft deep espresso, zero glare */
-  --text-muted: 28 8% 44%;       /* #79736e - Muted warm stone */
-  
+  --text-muted: 28 8% 37%;       /* #635e5a - WCAG AA ≥4.5:1 on paper bg */
+
   --border-subtle: 38 15% 85%;   /* #e2ded7 - Subtly contrasting warm sand border */
-  --border-focus: 28 42% 40%;
+  --border-focus: 28 42% 36%;
   
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
@@ -23,9 +23,9 @@
 @theme {
   --font-serif: var(--font-serif), Georgia, serif;
   --font-sans: var(--font-sans), system-ui, sans-serif;
-  --color-sand: hsl(28 42% 40%);
-  --color-sand-light: hsl(28 42% 50%);
-  --color-sand-dark: hsl(28 42% 30%);
+  --color-sand: hsl(28 42% 36%);
+  --color-sand-light: hsl(28 42% 46%);
+  --color-sand-dark: hsl(28 42% 26%);
   
   --color-obsidian: hsl(38 24% 94%);
   --color-obsidian-card: hsl(38 24% 97%);

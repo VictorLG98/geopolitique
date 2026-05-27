@@ -15,7 +15,7 @@ function CategoryBadge({ category }: { category: string }) {
     Economía: 'bg-green-100 text-green-700',
     Política: 'bg-orange-100 text-orange-700',
   };
-  const cls = colors[category] ?? 'bg-[hsl(38,24%,91%)] text-[hsl(28,8%,44%)]';
+  const cls = colors[category] ?? 'bg-[hsl(38,24%,91%)] text-[hsl(28,8%,37%)]';
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>
       {category}
@@ -71,11 +71,11 @@ export default function PostsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-serif text-3xl font-bold text-[hsl(24,15%,15%)]">Artículos</h1>
-            <p className="text-[hsl(28,8%,44%)] mt-1 text-sm">{posts.length} artículos en total</p>
+            <p className="text-[hsl(28,8%,37%)] mt-1 text-sm">{posts.length} artículos en total</p>
           </div>
           <Link
             href="/admin/posts/new"
-            className="flex items-center gap-2 px-4 py-2.5 bg-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,30%)] text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[hsl(28,42%,36%)] hover:bg-[hsl(28,42%,30%)] text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -115,20 +115,20 @@ export default function PostsPage() {
         <div className="bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-6 h-6 border-2 border-[hsl(28,42%,40%)] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-[hsl(28,42%,36%)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[hsl(28,8%,44%)] text-sm">
+            <div className="p-12 text-center text-[hsl(28,8%,37%)] text-sm">
               No hay artículos que coincidan.
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[hsl(38,15%,85%)]">
-                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,44%)]">Artículo</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,44%)] hidden sm:table-cell">Categoría</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,44%)] hidden md:table-cell">Fecha</th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,44%)]">Acciones</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,37%)]">Artículo</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,37%)] hidden sm:table-cell">Categoría</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,37%)] hidden md:table-cell">Fecha</th>
+                  <th className="text-right px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,37%)]">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[hsl(38,15%,85%)]">
@@ -137,13 +137,13 @@ export default function PostsPage() {
                     <td className="px-5 py-4">
                       <div>
                         <p className="font-semibold text-[hsl(24,15%,15%)] line-clamp-1">{post.title}</p>
-                        <p className="text-xs text-[hsl(28,8%,44%)] mt-0.5 font-mono">{post.slug}</p>
+                        <p className="text-xs text-[hsl(28,8%,37%)] mt-0.5 font-mono">{post.slug}</p>
                       </div>
                     </td>
                     <td className="px-4 py-4 hidden sm:table-cell">
                       <CategoryBadge category={post.category} />
                     </td>
-                    <td className="px-4 py-4 hidden md:table-cell text-[hsl(28,8%,44%)]">
+                    <td className="px-4 py-4 hidden md:table-cell text-[hsl(28,8%,37%)]">
                       {new Date(post.published_at).toLocaleDateString('es-ES', {
                         day: '2-digit', month: 'short', year: 'numeric'
                       })}
@@ -153,7 +153,7 @@ export default function PostsPage() {
                         <Link
                           href={`/posts/${post.slug}`}
                           target="_blank"
-                          className="p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:text-[hsl(24,15%,15%)] hover:bg-[hsl(38,15%,85%)] transition-colors"
+                          className="p-1.5 rounded-lg text-[hsl(28,8%,37%)] hover:text-[hsl(24,15%,15%)] hover:bg-[hsl(38,15%,85%)] transition-colors"
                           title="Ver"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +165,7 @@ export default function PostsPage() {
                         </Link>
                         <Link
                           href={`/admin/posts/${post.slug}/edit`}
-                          className="p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:text-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,40%)]/10 transition-colors"
+                          className="p-1.5 rounded-lg text-[hsl(28,8%,37%)] hover:text-[hsl(28,42%,36%)] hover:bg-[hsl(28,42%,36%)]/10 transition-colors"
                           title="Editar"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +176,7 @@ export default function PostsPage() {
                         <button
                           onClick={() => handleDelete(post.slug, post.title)}
                           disabled={deleting === post.slug}
-                          className="p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-[hsl(28,8%,37%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                           title="Eliminar"
                         >
                           {deleting === post.slug ? (

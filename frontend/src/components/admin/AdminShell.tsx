@@ -112,14 +112,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <div className="flex items-center border-b border-[hsl(38,15%,85%)] h-[60px] px-4 shrink-0 gap-2">
           {collapsed ? (
             <Link href="/" aria-label="Geopolitiqué — ir al blog" className="mx-auto">
-              <span className="font-serif text-xl font-extrabold text-[hsl(28,42%,40%)]">G</span>
+              <span className="font-serif text-xl font-extrabold text-[hsl(28,42%,36%)]">G</span>
             </Link>
           ) : (
             <Link href="/" className="flex flex-col overflow-hidden flex-1 min-w-0">
               <span className="font-serif text-xl font-extrabold text-[hsl(24,15%,15%)] whitespace-nowrap">
-                Geopolitiqué<span className="text-[hsl(28,42%,40%)]">.</span>
+                Geopolitiqué<span className="text-[hsl(28,42%,36%)]">.</span>
               </span>
-              <span className="text-[10px] uppercase tracking-widest text-[hsl(28,42%,40%)] font-semibold whitespace-nowrap">
+              <span className="text-[10px] uppercase tracking-widest text-[hsl(28,42%,36%)] font-semibold whitespace-nowrap">
                 Admin
               </span>
             </Link>
@@ -128,7 +128,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <button
             onClick={toggleCollapse}
             aria-label={collapsed ? 'Expandir menú' : 'Colapsar menú'}
-            className="hidden lg:flex shrink-0 p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200"
+            className="hidden lg:flex shrink-0 p-1.5 rounded-lg text-[hsl(28,8%,37%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200"
           >
             <svg
               aria-hidden="true"
@@ -155,8 +155,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                   'flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
                   collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
                   active
-                    ? 'bg-[hsl(28,42%,40%)] text-white shadow-sm'
-                    : 'text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)]',
+                    ? 'bg-[hsl(28,42%,36%)] text-white shadow-sm'
+                    : 'text-[hsl(28,8%,37%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)]',
                 ].join(' ')}
               >
                 {item.icon}
@@ -172,7 +172,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             href="/"
             aria-label={collapsed ? 'Ver blog' : undefined}
             className={[
-              'flex items-center gap-3 rounded-lg text-sm font-medium text-[hsl(28,8%,44%)]',
+              'flex items-center gap-3 rounded-lg text-sm font-medium text-[hsl(28,8%,37%)]',
               'hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200 whitespace-nowrap',
               collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
             ].join(' ')}
@@ -209,7 +209,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <header className="lg:hidden flex items-center gap-4 px-4 py-3 bg-[hsl(38,24%,97%)] border-b border-[hsl(38,15%,85%)]">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] transition-colors"
+            className="p-2 rounded-lg text-[hsl(28,8%,37%)] hover:bg-[hsl(38,24%,91%)] transition-colors"
             aria-label="Abrir menú"
           >
             <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

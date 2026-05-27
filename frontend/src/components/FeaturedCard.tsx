@@ -39,7 +39,7 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
             <span className="font-serif text-3xl font-extrabold text-slate-900/5 tracking-tighter block leading-none select-none">
               GEOPOLITIQUE
             </span>
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest block font-bold">
+            <span className="text-[10px] text-slate-600 uppercase tracking-widest block font-bold">
               Informe Especial
             </span>
           </div>
@@ -53,7 +53,7 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
                 {post.category}
               </span>
               <span className="text-slate-300">•</span>
-              <span className="text-slate-500 font-semibold">
+              <span className="text-slate-600 font-semibold">
                 {post.read_time} min de lectura
               </span>
             </div>
@@ -70,7 +70,7 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
           </div>
 
           <div className="pt-6 border-t border-border-subtle flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-sans">
+            <span className="text-xs text-slate-600 font-sans">
               Publicado el {formattedDate}
             </span>
             <Link

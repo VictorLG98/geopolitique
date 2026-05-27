@@ -40,9 +40,9 @@ export default function AdminLoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="font-serif text-3xl font-extrabold text-[hsl(24,15%,15%)]">
-            Geopolitiqué<span className="text-[hsl(28,42%,40%)]">.</span>
+            Geopolitiqué<span className="text-[hsl(28,42%,36%)]">.</span>
           </h1>
-          <p className="mt-2 text-sm text-[hsl(28,8%,44%)] uppercase tracking-widest font-semibold">
+          <p className="mt-2 text-sm text-[hsl(28,8%,37%)] uppercase tracking-widest font-semibold">
             Panel de administración
           </p>
         </div>
@@ -78,14 +78,14 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || !secret}
-              className="w-full py-3 bg-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,30%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full py-3 bg-[hsl(28,42%,36%)] hover:bg-[hsl(28,42%,30%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-md"
             >
               {loading ? 'Verificando...' : 'Acceder'}
             </button>
           </form>
         </div>
 
-        <p className="text-center mt-6 text-xs text-[hsl(28,8%,44%)]">
+        <p className="text-center mt-6 text-xs text-[hsl(28,8%,37%)]">
           Acceso restringido al equipo editorial
         </p>
       </div>

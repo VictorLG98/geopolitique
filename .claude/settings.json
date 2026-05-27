@@ -14,7 +14,10 @@
       "Read(//private/tmp/claude-501/**)",
       "Bash(pkill -f \"next build\")",
       "Skill(compress)",
-      "Skill(compress:*)"
+      "Skill(compress:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)\\); print\\('devdeps:', list\\(d.get\\('devDependencies',{}\\).keys\\(\\)\\)\\)\")",
+      "Bash(xargs sed -i '' 's/28,42%,40%/28,42%,36%/g; s/28, 42%, 40%/28, 42%, 36%/g')",
+      "Bash(xargs sed -i '' 's/28,8%,44%/28,8%,37%/g; s/28, 8%, 44%/28, 8%, 37%/g')"
     ]
   }
 }

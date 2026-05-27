@@ -22,7 +22,7 @@ export default function PostCard({ post }: PostCardProps) {
           <span className="px-2.5 py-0.5 rounded-full font-sans font-semibold uppercase text-sand bg-sand/5 border border-sand/10">
             {post.category}
           </span>
-          <span className="text-slate-500 font-semibold">
+          <span className="text-slate-600 font-semibold">
             {post.read_time} min de lectura
           </span>
         </div>
@@ -42,7 +42,7 @@ export default function PostCard({ post }: PostCardProps) {
 
       {/* Footer link & date */}
       <div className="mt-6 pt-4 border-t border-border-subtle flex items-center justify-between text-xs">
-        <span className="text-slate-500 font-semibold font-sans">
+        <span className="text-slate-600 font-semibold font-sans">
           {formattedDate}
         </span>
         <Link

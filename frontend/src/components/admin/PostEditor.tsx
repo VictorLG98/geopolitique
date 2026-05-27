@@ -232,7 +232,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
             <h1 className="font-serif text-3xl font-bold text-[hsl(24,15%,15%)]">
               {mode === 'create' ? 'Nuevo artículo' : 'Editar artículo'}
             </h1>
-            <p className="text-[hsl(28,8%,44%)] mt-1 text-sm">
+            <p className="text-[hsl(28,8%,37%)] mt-1 text-sm">
               {mode === 'create' ? 'Crea un nuevo análisis geopolítico' : `Editando: ${initialSlug}`}
             </p>
           </div>
@@ -244,8 +244,8 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               title="Vista previa de tarjeta"
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
                 showCardPreview
-                  ? 'bg-[hsl(28,42%,40%)] text-white border-transparent'
-                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,44%)] border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,40%)]/40'
+                  ? 'bg-[hsl(28,42%,36%)] text-white border-transparent'
+                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,37%)] border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,36%)]/40'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,8 +263,8 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               title="Vista dividida editor / preview"
               className={`hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
                 splitView
-                  ? 'bg-[hsl(28,42%,40%)] text-white border-transparent'
-                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,44%)] border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,40%)]/40'
+                  ? 'bg-[hsl(28,42%,36%)] text-white border-transparent'
+                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,37%)] border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,36%)]/40'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,8 +279,8 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               onClick={() => setMobilePreview(v => !v)}
               className={`lg:hidden flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
                 mobilePreview
-                  ? 'bg-[hsl(28,42%,40%)] text-white border-transparent'
-                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,44%)] border-[hsl(38,15%,85%)]'
+                  ? 'bg-[hsl(28,42%,36%)] text-white border-transparent'
+                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,37%)] border-[hsl(38,15%,85%)]'
               }`}
             >
               {mobilePreview ? 'Editar' : 'Preview'}
@@ -315,7 +315,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
         {/* Card preview panel */}
         {showCardPreview && (
           <div className="mb-5 p-5 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl space-y-3">
-            <p className="text-xs uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold">Vista previa · tarjeta en portada</p>
+            <p className="text-xs uppercase tracking-widest text-[hsl(28,8%,37%)] font-semibold">Vista previa · tarjeta en portada</p>
             <div className="max-w-sm">
               <article className="flex flex-col justify-between p-5 rounded-xl border border-gray-200 bg-white shadow-sm space-y-3">
                 {imageUrl && imgOk && (
@@ -323,7 +323,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                   <img src={imageUrl} alt="Vista previa de la imagen destacada del artículo" className="w-full h-32 object-cover rounded-lg" />
                 )}
                 <div className="flex items-center justify-between text-xs tracking-wider">
-                  <span className="px-2 py-0.5 rounded-full font-semibold uppercase text-[hsl(28,42%,40%)] bg-[hsl(28,42%,40%)]/5 border border-[hsl(28,42%,40%)]/10">
+                  <span className="px-2 py-0.5 rounded-full font-semibold uppercase text-[hsl(28,42%,36%)] bg-[hsl(28,42%,36%)]/5 border border-[hsl(28,42%,36%)]/10">
                     {category}
                   </span>
                   <span className="text-gray-400">{readTime} min de lectura</span>
@@ -336,7 +336,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 </p>
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
                   <span className="text-gray-400">{previewDate}</span>
-                  <span className="text-[hsl(28,42%,40%)] font-bold">Leer artículo →</span>
+                  <span className="text-[hsl(28,42%,36%)] font-bold">Leer artículo →</span>
                 </div>
               </article>
             </div>
@@ -363,7 +363,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 className="elegant-input w-full px-4 py-2.5 text-sm"
               />
               {title && (
-                <p className="text-xs text-[hsl(28,8%,44%)] mt-1 tabular-nums">
+                <p className="text-xs text-[hsl(28,8%,37%)] mt-1 tabular-nums">
                   {title.length} caracteres
                 </p>
               )}
@@ -381,8 +381,8 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 className="elegant-input w-full px-4 py-2.5 text-sm font-mono"
               />
               {slug && (
-                <p className="text-xs text-[hsl(28,8%,44%)] mt-1 font-mono truncate">
-                  /posts/<span className="text-[hsl(28,42%,40%)]">{slug}</span>
+                <p className="text-xs text-[hsl(28,8%,37%)] mt-1 font-mono truncate">
+                  /posts/<span className="text-[hsl(28,42%,36%)]">{slug}</span>
                 </p>
               )}
             </div>
@@ -395,7 +395,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 Resumen <span className="text-red-500">*</span>
               </label>
               <span className={`text-xs font-mono tabular-nums transition-colors ${
-                summary.length > SUMMARY_MAX * 0.9 ? 'text-red-500 font-semibold' : 'text-[hsl(28,8%,44%)]'
+                summary.length > SUMMARY_MAX * 0.9 ? 'text-red-500 font-semibold' : 'text-[hsl(28,8%,37%)]'
               }`}>
                 {summary.length} / {SUMMARY_MAX}
               </span>
@@ -426,7 +426,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
             <div>
               <label className="block text-sm font-semibold text-[hsl(24,15%,15%)] mb-1.5">
                 Tiempo de lectura
-                <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] bg-[hsl(28,42%,40%)]/10 text-[hsl(28,42%,40%)] font-semibold">
+                <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] bg-[hsl(28,42%,36%)]/10 text-[hsl(28,42%,36%)] font-semibold">
                   auto
                 </span>
               </label>
@@ -438,7 +438,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                   min={1} max={60}
                   className="elegant-input w-full px-4 py-2.5 text-sm pr-10"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[hsl(28,8%,44%)] pointer-events-none">min</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[hsl(28,8%,37%)] pointer-events-none">min</span>
               </div>
             </div>
             <div>
@@ -456,7 +456,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                   onClick={() => imgFileRef.current?.click()}
                   disabled={imgUploading}
                   title="Subir imagen a Cloudinary"
-                  className="shrink-0 px-3 py-2.5 rounded-lg border border-[hsl(38,15%,85%)] bg-[hsl(38,24%,97%)] hover:border-[hsl(28,42%,40%)]/40 text-[hsl(28,8%,44%)] hover:text-[hsl(28,42%,40%)] transition-all disabled:opacity-50"
+                  className="shrink-0 px-3 py-2.5 rounded-lg border border-[hsl(38,15%,85%)] bg-[hsl(38,24%,97%)] hover:border-[hsl(28,42%,36%)]/40 text-[hsl(28,8%,37%)] hover:text-[hsl(28,42%,36%)] transition-all disabled:opacity-50"
                 >
                   {imgUploading ? (
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -481,7 +481,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               <label className="block text-sm font-semibold text-[hsl(24,15%,15%)] mb-1.5">
                 Fecha de publicación
                 {mode === 'create' && (
-                  <span className="ml-1.5 text-[10px] text-[hsl(28,8%,44%)] font-normal normal-case tracking-normal">
+                  <span className="ml-1.5 text-[10px] text-[hsl(28,8%,37%)] font-normal normal-case tracking-normal">
                     (vacío = ahora)
                   </span>
                 )}
@@ -508,7 +508,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 style={{ display: imgOk ? 'block' : 'none' }}
               />
               {!imgOk && (
-                <span className="text-sm text-[hsl(28,8%,44%)]">
+                <span className="text-sm text-[hsl(28,8%,37%)]">
                   {imageUrl ? 'Cargando imagen...' : ''}
                 </span>
               )}
@@ -521,7 +521,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               <label className="text-sm font-semibold text-[hsl(24,15%,15%)]">
                 Contenido <span className="text-red-500">*</span>
               </label>
-              <span className="text-xs text-[hsl(28,8%,44%)] tabular-nums">
+              <span className="text-xs text-[hsl(28,8%,37%)] tabular-nums">
                 {wordCount} palabras · {readTime} min lectura
               </span>
             </div>
@@ -536,7 +536,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                   />
                 </div>
                 <div className="bg-[hsl(38,24%,97%)] overflow-y-auto" style={{ maxHeight: 600 }}>
-                  <p className="text-[10px] uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold px-6 pt-4 pb-2">
+                  <p className="text-[10px] uppercase tracking-widest text-[hsl(28,8%,37%)] font-semibold px-6 pt-4 pb-2">
                     Vista previa
                   </p>
                   <div className="px-6 pb-6">
@@ -557,7 +557,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
             )}
 
             {/* Keyboard shortcut hints */}
-            <p className="mt-2 text-xs text-[hsl(28,8%,44%)]">
+            <p className="mt-2 text-xs text-[hsl(28,8%,37%)]">
               {[
                 ['Ctrl+B', 'negrita'],
                 ['Ctrl+I', 'cursiva'],
@@ -573,7 +573,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 </span>
               ))}
               {lastSaved && (
-                <span className="ml-2 text-[hsl(28,8%,44%)] font-mono">
+                <span className="ml-2 text-[hsl(28,8%,37%)] font-mono">
                   · guardado {lastSaved.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               )}
@@ -583,12 +583,12 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
           {/* Article outline (visible when content has headings) */}
           {outlineItems.length > 0 && (
             <div className="px-4 py-3 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl space-y-1.5">
-              <p className="text-xs uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold mb-2">
+              <p className="text-xs uppercase tracking-widest text-[hsl(28,8%,37%)] font-semibold mb-2">
                 Estructura del artículo
               </p>
               {outlineItems.map((item, i) => (
-                <div key={i} className={`text-sm flex items-center gap-2 ${item.level === 2 ? 'text-[hsl(24,15%,15%)] font-medium' : 'pl-4 text-[hsl(28,8%,44%)] text-xs'}`}>
-                  <span className="text-[hsl(28,42%,40%)] font-mono text-[10px] shrink-0">H{item.level}</span>
+                <div key={i} className={`text-sm flex items-center gap-2 ${item.level === 2 ? 'text-[hsl(24,15%,15%)] font-medium' : 'pl-4 text-[hsl(28,8%,37%)] text-xs'}`}>
+                  <span className="text-[hsl(28,42%,36%)] font-mono text-[10px] shrink-0">H{item.level}</span>
                   <span className="truncate">{item.text}</span>
                 </div>
               ))}
@@ -596,34 +596,34 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
           )}
 
           {/* Newsletter notify */}
-          <label className="flex items-center gap-3 px-4 py-3 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl cursor-pointer hover:border-[hsl(28,42%,40%)]/40 transition-colors select-none">
+          <label className="flex items-center gap-3 px-4 py-3 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl cursor-pointer hover:border-[hsl(28,42%,36%)]/40 transition-colors select-none">
             <input
               type="checkbox"
               checked={notify}
               onChange={(e) => setNotify(e.target.checked)}
-              className="w-4 h-4 rounded accent-[hsl(28,42%,40%)]"
+              className="w-4 h-4 rounded accent-[hsl(28,42%,36%)]"
             />
             <div>
               <span className="text-sm font-semibold text-[hsl(24,15%,15%)]">
                 Notificar a suscriptores de la newsletter
               </span>
-              <p className="text-xs text-[hsl(28,8%,44%)] mt-0.5">
+              <p className="text-xs text-[hsl(28,8%,37%)] mt-0.5">
                 Se enviará un correo con el título y resumen del artículo al publicar.
               </p>
             </div>
-            <svg className="w-4 h-4 text-[hsl(28,42%,40%)] ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[hsl(28,42%,36%)] ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </label>
 
           {notifyStatus && (
-            <p className="text-xs text-[hsl(28,42%,40%)] font-medium">{notifyStatus}</p>
+            <p className="text-xs text-[hsl(28,42%,36%)] font-medium">{notifyStatus}</p>
           )}
 
           {/* Sticky action bar */}
           <div className="sticky bottom-0 z-10 bg-[hsl(38,24%,94%)]/90 backdrop-blur-sm border-t border-[hsl(38,15%,85%)] -mx-6 lg:-mx-8 px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
-            <div className="text-xs text-[hsl(28,8%,44%)] hidden sm:block">
+            <div className="text-xs text-[hsl(28,8%,37%)] hidden sm:block">
               <span className="tabular-nums">{wordCount} palabras</span>
               {lastSaved && (
                 <span className="ml-3">
@@ -635,14 +635,14 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-5 py-2.5 rounded-xl text-sm font-medium text-[hsl(28,8%,44%)] hover:text-[hsl(24,15%,15%)] bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,40%)]/40 transition-all"
+                className="px-5 py-2.5 rounded-xl text-sm font-medium text-[hsl(28,8%,37%)] hover:text-[hsl(24,15%,15%)] bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,36%)]/40 transition-all"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-6 py-2.5 bg-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,30%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+                className="px-6 py-2.5 bg-[hsl(28,42%,36%)] hover:bg-[hsl(28,42%,30%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-2"
               >
                 {saving && (
                   <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">

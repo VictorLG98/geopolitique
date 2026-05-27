@@ -65,7 +65,7 @@ export default function NewsletterPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-serif text-3xl font-bold text-[hsl(24,15%,15%)]">Newsletter</h1>
-            <p className="text-[hsl(28,8%,44%)] mt-1 text-sm">{subscribers.length} suscriptores</p>
+            <p className="text-[hsl(28,8%,37%)] mt-1 text-sm">{subscribers.length} suscriptores</p>
           </div>
           {subscribers.length > 0 && (
             <button
@@ -100,20 +100,20 @@ export default function NewsletterPage() {
         <div className="bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-6 h-6 border-2 border-[hsl(28,42%,40%)] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-[hsl(28,42%,36%)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[hsl(28,8%,44%)] text-sm">
+            <div className="p-12 text-center text-[hsl(28,8%,37%)] text-sm">
               {subscribers.length === 0 ? 'Aún no hay suscriptores.' : 'No hay coincidencias.'}
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[hsl(38,15%,85%)]">
-                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,44%)]">
+                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,37%)]">
                     Email
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,44%)] hidden sm:table-cell">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(28,8%,37%)] hidden sm:table-cell">
                     Suscrito el
                   </th>
                   <th className="text-right px-5 py-3" />
@@ -123,7 +123,7 @@ export default function NewsletterPage() {
                 {filtered.map((sub) => (
                   <tr key={sub.id} className="hover:bg-[hsl(38,24%,91%)] transition-colors">
                     <td className="px-5 py-3.5 font-medium text-[hsl(24,15%,15%)]">{sub.email}</td>
-                    <td className="px-4 py-3.5 text-[hsl(28,8%,44%)] hidden sm:table-cell">
+                    <td className="px-4 py-3.5 text-[hsl(28,8%,37%)] hidden sm:table-cell">
                       {new Date(sub.subscribed_at).toLocaleDateString('es-ES', {
                         day: '2-digit', month: 'short', year: 'numeric'
                       })}
@@ -132,7 +132,7 @@ export default function NewsletterPage() {
                       <button
                         onClick={() => handleDelete(sub.id, sub.email)}
                         disabled={deleting === sub.id}
-                        className="p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-lg text-[hsl(28,8%,37%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                         title="Dar de baja"
                       >
                         {deleting === sub.id ? (

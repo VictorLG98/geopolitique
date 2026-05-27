@@ -104,7 +104,7 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
         {/* Results Section */}
         <div aria-live="polite" aria-label="Resultados de búsqueda" className="space-y-4 pt-2">
           {query.trim() === '' ? (
-            <div className="text-center py-12 text-slate-500 text-sm space-y-2">
+            <div className="text-center py-12 text-slate-600 text-sm space-y-2">
               <p>Comience a escribir para buscar informes especiales.</p>
               <div className="flex justify-center gap-2 pt-2 text-xs">
                 <button onClick={() => setQuery('Ártico')} className="px-2.5 py-1 rounded bg-obsidian-card border border-border-subtle text-slate-600 hover:border-sand/30 hover:text-sand transition-all font-semibold">#Ártico</button>
@@ -126,21 +126,21 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
                 >
                   <div className="flex items-center justify-between text-[10px] uppercase tracking-wider mb-1.5 font-bold">
                     <span className="text-sand">{post.category}</span>
-                    <span className="text-slate-500">{post.read_time} min</span>
+                    <span className="text-slate-600">{post.read_time} min</span>
                   </div>
                   <h4 className="font-serif text-base md:text-lg font-bold text-slate-900 group-hover:text-sand transition-colors leading-tight">
                     {post.title}
                   </h4>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-1 font-sans font-medium">
+                  <p className="text-xs text-slate-600 mt-1 line-clamp-1 font-sans font-medium">
                     {post.summary}
                   </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-500 text-sm">
+            <div className="text-center py-12 text-slate-600 text-sm">
               <p>No se encontraron análisis que coincidan con &ldquo;{query}&rdquo;.</p>
-              <p className="text-xs text-slate-400 mt-1">Pruebe con otros términos de búsqueda.</p>
+              <p className="text-xs text-slate-600 mt-1">Pruebe con otros términos de búsqueda.</p>
             </div>
           )}
         </div>
