@@ -26,7 +26,7 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
           </div>
           
           {/* Abstract SVG illustration representing global maps / routes */}
-          <div className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.12] text-sand pointer-events-none">
+          <div aria-hidden="true" className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.12] text-sand pointer-events-none">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
               <circle cx="50" cy="50" r="40" />
               <path d="M10 50h80M50 10v80" />
@@ -75,10 +75,12 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
             </span>
             <Link
               href={`/posts/${post.slug}`}
+              aria-label={`Leer: ${post.title}`}
               className="flex items-center gap-2 text-sm font-bold tracking-wide text-sand hover:text-slate-900 transition-colors duration-300 font-sans group/link"
             >
               Comenzar lectura
               <svg
+                aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 transform group-hover/link:translate-x-1.5 transition-transform"
                 fill="none"

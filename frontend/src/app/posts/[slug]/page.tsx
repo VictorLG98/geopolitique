@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import PostContainer from '@/components/PostContainer';
 import { getPostDetail, getPosts, PostDetail, Post } from '@/lib/api';
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://geopolitique.vercel.app';
+
 // Detailed fallbacks matching the seed database content to guarantee seamless offline functionality
 const FALLBACK_DETAILS: Record<string, PostDetail> = {
   "batalla-soberania-artica": {
@@ -123,26 +125,63 @@ El Triángulo del Litio será el escenario donde se decidirá el equilibrio de p
   }
 };
 
-// Next.js dynamic metadata generation for state-of-the-art SEO
+const FALLBACK_SLUGS = [
+  { slug: 'batalla-soberania-artica' },
+  { slug: 'geopolitica-semiconductores-taiwan' },
+  { slug: 'litio-andino-triangulo-oro' },
+];
+
+export async function generateStaticParams() {
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`${apiBase}/api/posts`, {
+      signal: controller.signal,
+      next: { revalidate: 60 },
+    });
+    clearTimeout(timeoutId);
+    if (!res.ok) return FALLBACK_SLUGS;
+    const posts: Array<{ slug: string }> = await res.json();
+    return posts.map(p => ({ slug: p.slug }));
+  } catch {
+    return FALLBACK_SLUGS;
+  }
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const fallback = FALLBACK_DETAILS[slug];
-  
+
+  const buildMeta = (post: { title: string; summary: string; category: string; image_url?: string; published_at: string }): Metadata => ({
+    title: post.title,
+    description: post.summary,
+    keywords: [post.category.toLowerCase(), "geopolitica", "analisis", slug],
+    openGraph: {
+      type: 'article',
+      url: `${BASE_URL}/posts/${slug}`,
+      title: post.title,
+      description: post.summary,
+      ...(post.image_url && { images: [{ url: post.image_url, width: 800, height: 400, alt: post.title }] }),
+      publishedTime: post.published_at,
+      authors: ['Geopolitiqué'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.summary,
+      ...(post.image_url && { images: [post.image_url] }),
+    },
+    alternates: {
+      canonical: `${BASE_URL}/posts/${slug}`,
+    },
+  });
+
   try {
     const post = await getPostDetail(slug);
-    return {
-      title: `${post.title} | Geopolitiqué`,
-      description: post.summary,
-      keywords: [post.category.toLowerCase(), "geopolitica", "analisis", slug],
-    };
+    return buildMeta(post);
   } catch {
-    if (fallback) {
-      return {
-        title: `${fallback.title} | Geopolitiqué`,
-        description: fallback.summary,
-        keywords: [fallback.category.toLowerCase(), "geopolitica", "analisis", slug],
-      };
-    }
+    if (fallback) return buildMeta(fallback);
     return {
       title: "Artículo no encontrado | Geopolitiqué",
       description: "Análisis geopolítico",
@@ -185,16 +224,34 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     notFound();
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: post.title,
+    description: post.summary,
+    ...(post.image_url && { image: post.image_url }),
+    datePublished: post.published_at,
+    url: `${BASE_URL}/posts/${post.slug}`,
+    author: { '@type': 'Organization', name: 'Geopolitiqué', url: BASE_URL },
+    publisher: { '@type': 'Organization', name: 'Geopolitiqué', url: BASE_URL },
+  };
+
   return (
-    <Suspense fallback={
-      <div className="flex-grow flex flex-col items-center justify-center min-h-screen bg-[#0B0C0E]">
-        <div className="animate-pulse space-y-4 text-center">
-          <div className="h-6 w-48 bg-slate-800 rounded mx-auto" />
-          <div className="h-4 w-72 bg-slate-900 rounded mx-auto" />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Suspense fallback={
+        <div className="flex-grow flex flex-col items-center justify-center min-h-screen bg-[#0B0C0E]">
+          <div className="animate-pulse space-y-4 text-center">
+            <div className="h-6 w-48 bg-slate-800 rounded mx-auto" />
+            <div className="h-4 w-72 bg-slate-900 rounded mx-auto" />
+          </div>
         </div>
-      </div>
-    }>
-      <PostContainer post={post} allPosts={allPosts} />
-    </Suspense>
+      }>
+        <PostContainer post={post} allPosts={allPosts} />
+      </Suspense>
+    </>
   );
 }

@@ -3,9 +3,9 @@ import resend
 import httpx
 import cloudinary
 import cloudinary.uploader
-from fastapi import FastAPI, Depends, HTTPException, Query, Request, status, Header, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Query, Request, Response, status, Header, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 
 from .database import engine, Base, get_db
@@ -57,10 +57,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for Next.js frontend development
+# Enable CORS — restrict to known origins in production
+_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For flexible local development
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,8 +79,11 @@ def health_check():
 
 @app.get("/api/posts", response_model=List[schemas.Post])
 def get_posts(
+    response: Response,
     q: Optional[str] = Query(None, description="Search query in title, summary, or content"),
     category: Optional[str] = Query(None, description="Filter by category name"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db)
 ):
     query = db.query(models.Post)
@@ -91,15 +99,22 @@ def get_posts(
             (models.Post.content.ilike(search_filter))
         )
 
-    return query.order_by(models.Post.published_at.desc()).all()
+    response.headers["Cache-Control"] = "public, max-age=300"
+    return query.order_by(models.Post.published_at.desc()).offset(skip).limit(limit).all()
 
 @app.get("/api/posts/{slug}", response_model=schemas.PostDetail)
-def get_post_detail(slug: str, db: Session = Depends(get_db)):
-    post = db.query(models.Post).filter(models.Post.slug == slug).first()
+def get_post_detail(slug: str, response: Response, db: Session = Depends(get_db)):
+    post = (
+        db.query(models.Post)
+        .options(joinedload(models.Post.comments))
+        .filter(models.Post.slug == slug)
+        .first()
+    )
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
     post.comments = sorted(post.comments, key=lambda c: c.created_at, reverse=True)
+    response.headers["Cache-Control"] = "public, max-age=120"
     return post
 
 @app.post("/api/posts/{slug}/comments", response_model=schemas.Comment)
@@ -198,8 +213,13 @@ def delete_post(slug: str, db: Session = Depends(get_db), _: str = Depends(verif
 # ── Admin: Comments ──────────────────────────────────────────────────────────
 
 @app.get("/api/admin/comments", response_model=List[schemas.CommentDetail])
-def get_all_comments(db: Session = Depends(get_db), _: str = Depends(verify_admin)):
-    return db.query(models.Comment).order_by(models.Comment.created_at.desc()).all()
+def get_all_comments(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+    _: str = Depends(verify_admin),
+):
+    return db.query(models.Comment).order_by(models.Comment.created_at.desc()).offset(skip).limit(limit).all()
 
 @app.delete("/api/admin/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_comment(comment_id: int, db: Session = Depends(get_db), _: str = Depends(verify_admin)):
@@ -213,10 +233,15 @@ def delete_comment(comment_id: int, db: Session = Depends(get_db), _: str = Depe
 # ── Admin: Newsletter ────────────────────────────────────────────────────────
 
 @app.get("/api/admin/newsletter", response_model=List[schemas.NewsletterResponse])
-def get_newsletter_subscribers(db: Session = Depends(get_db), _: str = Depends(verify_admin)):
+def get_newsletter_subscribers(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+    _: str = Depends(verify_admin),
+):
     return db.query(models.NewsletterSubscriber).order_by(
         models.NewsletterSubscriber.subscribed_at.desc()
-    ).all()
+    ).offset(skip).limit(limit).all()
 
 @app.delete("/api/admin/newsletter/{subscriber_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_subscriber(subscriber_id: int, db: Session = Depends(get_db), _: str = Depends(verify_admin)):
@@ -322,6 +347,8 @@ async def upload_image(file: UploadFile = File(...), _: str = Depends(verify_adm
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El archivo debe ser una imagen")
 
     contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La imagen no puede superar 10 MB")
     result = cloudinary.uploader.upload(
         contents,
         folder="geopolitique",

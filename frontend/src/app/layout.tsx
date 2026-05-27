@@ -14,15 +14,43 @@ const inter = Inter({
   display: "swap",
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://geopolitique.vercel.app';
+const SITE_DESCRIPTION = "Un blog minimalista dedicado al análisis profundo de la seguridad global, recursos estratégicos, tecnología geopolítica y las nuevas fronteras comerciales del siglo XXI.";
+
 export const metadata: Metadata = {
-  title: "Geopolitiqué | Perspectivas y Análisis Geopolítico Global",
-  description: "Un blog minimalista dedicado al análisis profundo de la seguridad global, recursos estratégicos, tecnología geopolítica y las nuevas fronteras comerciales del siglo XXI.",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "Geopolitiqué | Perspectivas y Análisis Geopolítico Global",
+    template: "%s | Geopolitiqué",
+  },
+  description: SITE_DESCRIPTION,
   authors: [{ name: "Geopolitiqué Team" }],
   keywords: ["geopolitica", "seguridad", "semiconductores", "litio", "artico", "analisis", "relaciones internacionales"],
   icons: [
     { rel: 'icon', url: '/favicon.ico', type: 'image/x-icon' },
     { rel: 'shortcut icon', url: '/favicon.ico', type: 'image/x-icon' },
   ],
+  openGraph: {
+    type: 'website',
+    locale: 'es_ES',
+    url: BASE_URL,
+    siteName: 'Geopolitiqué',
+    title: 'Geopolitiqué | Perspectivas y Análisis Geopolítico Global',
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Geopolitiqué | Perspectivas y Análisis Geopolítico Global',
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  alternates: {
+    canonical: BASE_URL,
+  },
 };
 
 export default function RootLayout({

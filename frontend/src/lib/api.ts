@@ -26,7 +26,7 @@ export interface PostDetail extends Post {
 
 export async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const headers = new Headers({
     'Content-Type': 'application/json',
     ...options.headers,
@@ -35,6 +35,7 @@ export async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): 
   const response = await fetch(url, {
     ...options,
     headers,
+    signal: options.signal ?? AbortSignal.timeout(8000),
   });
 
   if (!response.ok) {

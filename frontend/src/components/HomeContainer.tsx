@@ -83,6 +83,7 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
             <button
               key={cat}
               onClick={() => handleCategorySelect(cat)}
+              aria-current={selectedCategory === cat ? 'true' : undefined}
               className={`px-4 py-2 text-xs md:text-sm font-bold tracking-wide rounded-lg border font-sans transition-all duration-300 ${
                 selectedCategory === cat
                   ? 'bg-sand border-sand text-white shadow-lg shadow-sand/10'

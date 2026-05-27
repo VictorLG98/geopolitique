@@ -47,10 +47,12 @@ export default function PostCard({ post }: PostCardProps) {
         </span>
         <Link
           href={`/posts/${post.slug}`}
+          aria-label={`Leer artículo: ${post.title}`}
           className="flex items-center gap-1 font-bold text-sand group-hover:text-slate-900 transition-colors duration-300 font-sans"
         >
           Leer artículo
           <svg
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             className="h-3 w-3 transform group-hover:translate-x-1 transition-transform"
             fill="none"

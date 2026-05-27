@@ -368,6 +368,21 @@ h1, h2, h3, h4, h5, h6 {
   font-style: italic;
 }
 
+/* Global focus-visible ring for keyboard accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(var(--border-focus));
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Override prose colors in light mode */
 .prose {
   color: hsl(var(--text-primary));

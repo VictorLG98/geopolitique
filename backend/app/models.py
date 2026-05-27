@@ -11,9 +11,9 @@ class Post(Base):
     title = Column(String(255), nullable=False)
     summary = Column(String(1000), nullable=False)
     content = Column(Text, nullable=False)
-    published_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    published_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
     read_time = Column(Integer, default=5, nullable=False)  # in minutes
-    category = Column(String(100), default="General", nullable=False)
+    category = Column(String(100), default="General", nullable=False, index=True)
     image_url = Column(String(500), nullable=True)
 
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
