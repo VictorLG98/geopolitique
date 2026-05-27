@@ -108,6 +108,7 @@ export interface PostCreateInput {
   category: string;
   read_time: number;
   image_url?: string;
+  published_at?: string;
 }
 
 export interface PostUpdateInput {
@@ -117,6 +118,7 @@ export interface PostUpdateInput {
   category?: string;
   read_time?: number;
   image_url?: string;
+  published_at?: string;
 }
 
 // ── Admin API helpers ──────────────────────────────────────────────────────
