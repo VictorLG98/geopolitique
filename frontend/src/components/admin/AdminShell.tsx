@@ -10,7 +10,7 @@ const NAV = [
     href: '/admin/dashboard',
     label: 'Panel',
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
       </svg>
@@ -20,7 +20,7 @@ const NAV = [
     href: '/admin/posts',
     label: 'Artículos',
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
@@ -30,7 +30,7 @@ const NAV = [
     href: '/admin/comments',
     label: 'Comentarios',
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
@@ -40,7 +40,7 @@ const NAV = [
     href: '/admin/newsletter',
     label: 'Newsletter',
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
@@ -48,11 +48,29 @@ const NAV = [
   },
 ];
 
+const COLLAPSED_KEY = 'geo_admin_sidebar_collapsed';
+
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const saved = localStorage.getItem(COLLAPSED_KEY);
+    if (saved === 'true') setCollapsed(true);
+  }, []);
+
+  function toggleCollapse() {
+    setCollapsed(v => {
+      const next = !v;
+      localStorage.setItem(COLLAPSED_KEY, String(next));
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (!isAuthenticated) router.replace('/admin');
@@ -71,27 +89,50 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       )}
 
       {/* Sidebar */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-30 w-64 flex flex-col
-        bg-[hsl(38,24%,97%)] border-r border-[hsl(38,15%,85%)]
-        transition-transform duration-300 ease-in-out
-        lg:static lg:translate-x-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+      <aside
+        className={[
+          'fixed inset-y-0 left-0 z-30 flex flex-col',
+          'bg-[hsl(38,24%,97%)] border-r border-[hsl(38,15%,85%)]',
+          'transition-[width,transform] duration-300 ease-in-out',
+          'lg:static lg:translate-x-0 overflow-hidden',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          mounted && collapsed ? 'w-[4.25rem]' : 'w-64',
+        ].join(' ')}
+      >
         {/* Brand */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-[hsl(38,15%,85%)]">
-          <Link href="/" className="flex flex-col">
-            <span className="font-serif text-xl font-extrabold text-[hsl(24,15%,15%)]">
-              Geopolitiqué<span className="text-[hsl(28,42%,40%)]">.</span>
-            </span>
-            <span className="text-[10px] uppercase tracking-widest text-[hsl(28,42%,40%)] font-semibold">
-              Admin
-            </span>
-          </Link>
+        <div className="flex items-center border-b border-[hsl(38,15%,85%)] h-[60px] px-4 shrink-0 gap-2">
+          {collapsed ? (
+            <Link href="/" title="Geopolitiqué" className="mx-auto">
+              <span className="font-serif text-xl font-extrabold text-[hsl(28,42%,40%)]">G</span>
+            </Link>
+          ) : (
+            <Link href="/" className="flex flex-col overflow-hidden flex-1 min-w-0">
+              <span className="font-serif text-xl font-extrabold text-[hsl(24,15%,15%)] whitespace-nowrap">
+                Geopolitiqué<span className="text-[hsl(28,42%,40%)]">.</span>
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-[hsl(28,42%,40%)] font-semibold whitespace-nowrap">
+                Admin
+              </span>
+            </Link>
+          )}
+          {/* Collapse toggle — desktop only */}
+          <button
+            onClick={toggleCollapse}
+            title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
+            className="hidden lg:flex shrink-0 p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200"
+          >
+            <svg
+              className={`w-4 h-4 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
           {NAV.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + '/');
             return (
@@ -99,41 +140,56 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                title={collapsed ? item.label : undefined}
+                className={[
+                  'flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
+                  collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
                   active
                     ? 'bg-[hsl(28,42%,40%)] text-white shadow-sm'
-                    : 'text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)]'
-                }`}
+                    : 'text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)]',
+                ].join(' ')}
               >
                 {item.icon}
-                {item.label}
+                {!collapsed && <span className="overflow-hidden">{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-4 border-t border-[hsl(38,15%,85%)]">
+        <div className="px-2 py-3 border-t border-[hsl(38,15%,85%)] space-y-0.5 shrink-0">
           <Link
             href="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200"
+            title={collapsed ? 'Ver blog' : undefined}
+            className={[
+              'flex items-center gap-3 rounded-lg text-sm font-medium text-[hsl(28,8%,44%)]',
+              'hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200 whitespace-nowrap',
+              collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
+            ].join(' ')}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-            Ver blog
+            {!collapsed && 'Ver blog'}
           </Link>
+
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-all duration-200 mt-1"
+            title={collapsed ? 'Cerrar sesión' : undefined}
+            className={[
+              'w-full flex items-center gap-3 rounded-lg text-sm font-medium',
+              'text-red-500 hover:bg-red-50 transition-all duration-200 whitespace-nowrap',
+              collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
+            ].join(' ')}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            Cerrar sesión
+            {!collapsed && 'Cerrar sesión'}
           </button>
+
         </div>
       </aside>
 

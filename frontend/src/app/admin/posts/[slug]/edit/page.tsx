@@ -49,6 +49,7 @@ export default function EditPostPage({ params }: { params: Promise<{ slug: strin
         category: post.category,
         read_time: post.read_time,
         image_url: post.image_url,
+        published_at: post.published_at.slice(0, 16),
       }}
     />
   );

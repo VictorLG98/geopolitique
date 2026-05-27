@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminShell from './AdminShell';
 import RichEditor from './RichEditor';
@@ -42,22 +42,30 @@ function isContentEmpty(html: string): boolean {
   return stripHtml(html).trim() === '';
 }
 
+function nowDatetimeLocal(): string {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+
 export default function PostEditor({ mode, initialSlug, initialData }: PostEditorProps) {
   const { token } = useAuth();
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [title, setTitle]       = useState(initialData?.title     ?? '');
-  const [slug, setSlug]         = useState(initialData?.slug      ?? '');
-  const [summary, setSummary]   = useState(initialData?.summary   ?? '');
-  const [content, setContent]   = useState(initialData?.content   ?? '');
-  const [category, setCategory] = useState(initialData?.category  ?? 'General');
-  const [readTime, setReadTime] = useState(initialData?.read_time ?? 5);
-  const [imageUrl, setImageUrl] = useState(initialData?.image_url ?? '');
-  const [imgOk, setImgOk]       = useState(!!initialData?.image_url);
+  const [title, setTitle]             = useState(initialData?.title        ?? '');
+  const [slug, setSlug]               = useState(initialData?.slug         ?? '');
+  const [summary, setSummary]         = useState(initialData?.summary      ?? '');
+  const [content, setContent]         = useState(initialData?.content      ?? '');
+  const [category, setCategory]       = useState(initialData?.category     ?? 'General');
+  const [readTime, setReadTime]       = useState(initialData?.read_time    ?? 5);
+  const [imageUrl, setImageUrl]       = useState(initialData?.image_url    ?? '');
+  const [publishedAt, setPublishedAt] = useState(initialData?.published_at ?? (mode === 'create' ? nowDatetimeLocal() : ''));
+  const [imgOk, setImgOk]             = useState(!!initialData?.image_url);
 
   const [splitView, setSplitView]         = useState(false);
   const [mobilePreview, setMobilePreview] = useState(false);
+  const [showCardPreview, setShowCardPreview] = useState(false);
   const [saving, setSaving]               = useState(false);
   const [notify, setNotify]               = useState(false);
   const [notifyStatus, setNotifyStatus]   = useState('');
@@ -76,7 +84,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
       try {
         const d = JSON.parse(saved);
         if (d.title || d.content) setHasDraft(true);
-      } catch { /* ignore corrupt draft */ }
+      } catch { /* ignore */ }
     }
   }, [mode]);
 
@@ -85,11 +93,11 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     if (mode !== 'create') return;
     const id = setInterval(() => {
       if (!title && !content) return;
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, slug, summary, content, category, readTime, imageUrl }));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, slug, summary, content, category, readTime, imageUrl, publishedAt }));
       setLastSaved(new Date());
     }, 30_000);
     return () => clearInterval(id);
-  }, [mode, title, slug, summary, content, category, readTime, imageUrl]);
+  }, [mode, title, slug, summary, content, category, readTime, imageUrl, publishedAt]);
 
   // Auto read-time from word count
   useEffect(() => {
@@ -108,8 +116,19 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // ── Featured image upload ────────────────────────────────────────────────
+  // ── Outline: parse H2/H3 from content HTML ───────────────────────────────
+  const outlineItems = useMemo(() => {
+    if (!content) return [];
+    const matches = [...content.matchAll(/<h([23])[^>]*>(.*?)<\/h\1>/gi)];
+    return matches.map(m => ({
+      level: parseInt(m[1]),
+      text: m[2].replace(/<[^>]+>/g, ''),
+    }));
+  }, [content]);
 
+  const wordCount = stripHtml(content).trim().split(/\s+/).filter(Boolean).length;
+
+  // ── Featured image upload ────────────────────────────────────────────────
   async function handleFeaturedImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !token) return;
@@ -127,7 +146,6 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
   }
 
   // ── Draft helpers ────────────────────────────────────────────────────────
-
   function restoreDraft() {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (!saved) return;
@@ -140,6 +158,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
       setCategory(d.category ?? 'General');
       setReadTime(d.readTime ?? 5);
       setImageUrl(d.imageUrl ?? '');
+      setPublishedAt(d.publishedAt ?? nowDatetimeLocal());
       setHasDraft(false);
     } catch { /* ignore */ }
   }
@@ -150,7 +169,6 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
   }
 
   // ── Submit / save ────────────────────────────────────────────────────────
-
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!token) return;
@@ -167,6 +185,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
       slug, title, summary, content, category,
       read_time: readTime,
       image_url: imageUrl || undefined,
+      published_at: publishedAt || undefined,
     };
 
     try {
@@ -198,9 +217,10 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────
-
-  const wordCount = stripHtml(content).trim().split(/\s+/).filter(Boolean).length;
+  // ── Card preview date ────────────────────────────────────────────────────
+  const previewDate = publishedAt
+    ? new Date(publishedAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+    : new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
     <AdminShell>
@@ -216,7 +236,26 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               {mode === 'create' ? 'Crea un nuevo análisis geopolítico' : `Editando: ${initialSlug}`}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Card preview toggle */}
+            <button
+              type="button"
+              onClick={() => setShowCardPreview(v => !v)}
+              title="Vista previa de tarjeta"
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
+                showCardPreview
+                  ? 'bg-[hsl(28,42%,40%)] text-white border-transparent'
+                  : 'bg-[hsl(38,24%,97%)] text-[hsl(28,8%,44%)] border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,40%)]/40'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Tarjeta
+            </button>
             {/* Split view — desktop only */}
             <button
               type="button"
@@ -273,6 +312,37 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
           </div>
         )}
 
+        {/* Card preview panel */}
+        {showCardPreview && (
+          <div className="mb-5 p-5 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl space-y-3">
+            <p className="text-xs uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold">Vista previa · tarjeta en portada</p>
+            <div className="max-w-sm">
+              <article className="flex flex-col justify-between p-5 rounded-xl border border-gray-200 bg-white shadow-sm space-y-3">
+                {imageUrl && imgOk && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imageUrl} alt="" className="w-full h-32 object-cover rounded-lg" />
+                )}
+                <div className="flex items-center justify-between text-xs tracking-wider">
+                  <span className="px-2 py-0.5 rounded-full font-semibold uppercase text-[hsl(28,42%,40%)] bg-[hsl(28,42%,40%)]/5 border border-[hsl(28,42%,40%)]/10">
+                    {category}
+                  </span>
+                  <span className="text-gray-400">{readTime} min de lectura</span>
+                </div>
+                <h3 className="font-serif text-lg font-bold text-gray-900 leading-tight">
+                  {title || <span className="text-gray-300 italic">Sin título</span>}
+                </h3>
+                <p className="text-sm text-gray-500 line-clamp-3">
+                  {summary || <span className="text-gray-300 italic">Sin resumen</span>}
+                </p>
+                <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                  <span className="text-gray-400">{previewDate}</span>
+                  <span className="text-[hsl(28,42%,40%)] font-bold">Leer artículo →</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        )}
+
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
 
           {/* Title + Slug */}
@@ -292,6 +362,11 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 placeholder="La batalla por la soberanía ártica..."
                 className="elegant-input w-full px-4 py-2.5 text-sm"
               />
+              {title && (
+                <p className="text-xs text-[hsl(28,8%,44%)] mt-1 tabular-nums">
+                  {title.length} caracteres
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-[hsl(24,15%,15%)] mb-1.5">
@@ -305,6 +380,11 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 placeholder="la-batalla-por-la-soberania-artica"
                 className="elegant-input w-full px-4 py-2.5 text-sm font-mono"
               />
+              {slug && (
+                <p className="text-xs text-[hsl(28,8%,44%)] mt-1 font-mono truncate">
+                  /posts/<span className="text-[hsl(28,42%,40%)]">{slug}</span>
+                </p>
+              )}
             </div>
           </div>
 
@@ -391,12 +471,26 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                   )}
                 </button>
               </div>
+              <input ref={imgFileRef} type="file" accept="image/*" className="hidden" onChange={handleFeaturedImageUpload} />
+            </div>
+          </div>
+
+          {/* Publication date */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-[hsl(24,15%,15%)] mb-1.5">
+                Fecha de publicación
+                {mode === 'create' && (
+                  <span className="ml-1.5 text-[10px] text-[hsl(28,8%,44%)] font-normal normal-case tracking-normal">
+                    (vacío = ahora)
+                  </span>
+                )}
+              </label>
               <input
-                ref={imgFileRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleFeaturedImageUpload}
+                type="datetime-local"
+                value={publishedAt}
+                onChange={(e) => setPublishedAt(e.target.value)}
+                className="elegant-input w-full px-4 py-2.5 text-sm"
               />
             </div>
           </div>
@@ -456,10 +550,10 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               </div>
             ) : (
               <RichEditor
-                    value={content}
-                    onChange={setContent}
-                    onUploadImage={token ? (file) => adminUploadImage(token, file).then(r => r.url) : undefined}
-                  />
+                value={content}
+                onChange={setContent}
+                onUploadImage={token ? (file) => adminUploadImage(token, file).then(r => r.url) : undefined}
+              />
             )}
 
             {/* Keyboard shortcut hints */}
@@ -469,6 +563,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
                 ['Ctrl+I', 'cursiva'],
                 ['Ctrl+Z', 'deshacer'],
                 ['Ctrl+S', 'guardar'],
+                ['/', 'comandos'],
               ].map(([key, label]) => (
                 <span key={key} className="mr-3 inline-block">
                   <kbd className="px-1.5 py-0.5 bg-[hsl(38,24%,91%)] border border-[hsl(38,15%,85%)] rounded text-[10px] font-mono">
@@ -484,6 +579,21 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               )}
             </p>
           </div>
+
+          {/* Article outline (visible when content has headings) */}
+          {outlineItems.length > 0 && (
+            <div className="px-4 py-3 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl space-y-1.5">
+              <p className="text-xs uppercase tracking-widest text-[hsl(28,8%,44%)] font-semibold mb-2">
+                Estructura del artículo
+              </p>
+              {outlineItems.map((item, i) => (
+                <div key={i} className={`text-sm flex items-center gap-2 ${item.level === 2 ? 'text-[hsl(24,15%,15%)] font-medium' : 'pl-4 text-[hsl(28,8%,44%)] text-xs'}`}>
+                  <span className="text-[hsl(28,42%,40%)] font-mono text-[10px] shrink-0">H{item.level}</span>
+                  <span className="truncate">{item.text}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Newsletter notify */}
           <label className="flex items-center gap-3 px-4 py-3 bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-xl cursor-pointer hover:border-[hsl(28,42%,40%)]/40 transition-colors select-none">
@@ -511,22 +621,38 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
             <p className="text-xs text-[hsl(28,42%,40%)] font-medium">{notifyStatus}</p>
           )}
 
-          {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-[hsl(38,15%,85%)]">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-[hsl(28,8%,44%)] hover:text-[hsl(24,15%,15%)] bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,40%)]/40 transition-all"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-6 py-2.5 bg-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,30%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all shadow-sm hover:shadow-md"
-            >
-              {saving ? 'Guardando...' : mode === 'create' ? 'Publicar artículo' : 'Guardar cambios'}
-            </button>
+          {/* Sticky action bar */}
+          <div className="sticky bottom-0 z-10 bg-[hsl(38,24%,94%)]/90 backdrop-blur-sm border-t border-[hsl(38,15%,85%)] -mx-6 lg:-mx-8 px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+            <div className="text-xs text-[hsl(28,8%,44%)] hidden sm:block">
+              <span className="tabular-nums">{wordCount} palabras</span>
+              {lastSaved && (
+                <span className="ml-3">
+                  · guardado {lastSaved.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-3 ml-auto">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium text-[hsl(28,8%,44%)] hover:text-[hsl(24,15%,15%)] bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] hover:border-[hsl(28,42%,40%)]/40 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-6 py-2.5 bg-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,30%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+              >
+                {saving && (
+                  <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                  </svg>
+                )}
+                {saving ? 'Guardando...' : mode === 'create' ? 'Publicar artículo' : 'Guardar cambios'}
+              </button>
+            </div>
           </div>
         </form>
       </div>
