@@ -425,7 +425,7 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
   // Shared bubble button class
   const bBtn = (active: boolean) =>
     `px-2 py-1 text-xs font-semibold rounded transition-colors ${
-      active ? 'bg-[hsl(28,42%,40%)] text-white' : 'text-white/90 hover:bg-white/15'
+      active ? 'bg-[hsl(28,42%,36%)] text-white' : 'text-white/90 hover:bg-white/15'
     }`;
 
   return (
@@ -452,7 +452,7 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
           {onUploadImage && (
             <button type="button" title={imgUploading ? 'Subiendo…' : 'Insertar imagen'} disabled={imgUploading}
               onMouseDown={e => { e.preventDefault(); imgInputRef.current?.click(); }}
-              className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-[hsl(28,8%,50%)] hover:text-[hsl(28,42%,40%)] transition-colors rounded hover:bg-[hsl(38,24%,91%)] disabled:opacity-40">
+              className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-[hsl(28,8%,50%)] hover:text-[hsl(28,42%,36%)] transition-colors rounded hover:bg-[hsl(38,24%,91%)] disabled:opacity-40">
               {imgUploading
                 ? <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                 : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>

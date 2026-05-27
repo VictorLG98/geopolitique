@@ -57,7 +57,7 @@ export default function CommentsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-serif text-3xl font-bold text-[hsl(24,15%,15%)]">Comentarios</h1>
-            <p className="text-[hsl(28,8%,44%)] mt-1 text-sm">{comments.length} comentarios en total</p>
+            <p className="text-[hsl(28,8%,37%)] mt-1 text-sm">{comments.length} comentarios en total</p>
           </div>
         </div>
 
@@ -80,10 +80,10 @@ export default function CommentsPage() {
         <div className="bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-6 h-6 border-2 border-[hsl(28,42%,40%)] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-[hsl(28,42%,36%)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[hsl(28,8%,44%)] text-sm">
+            <div className="p-12 text-center text-[hsl(28,8%,37%)] text-sm">
               No hay comentarios que coincidan.
             </div>
           ) : (
@@ -95,7 +95,7 @@ export default function CommentsPage() {
                       {/* Author + date */}
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold text-sm text-[hsl(24,15%,15%)]">{comment.author}</span>
-                        <span className="text-xs text-[hsl(28,8%,44%)]">
+                        <span className="text-xs text-[hsl(28,8%,37%)]">
                           {new Date(comment.created_at).toLocaleDateString('es-ES', {
                             day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                           })}
@@ -107,7 +107,7 @@ export default function CommentsPage() {
                       <Link
                         href={`/posts/${comment.post.slug}`}
                         target="_blank"
-                        className="inline-flex items-center gap-1 text-xs text-[hsl(28,42%,40%)] hover:underline"
+                        className="inline-flex items-center gap-1 text-xs text-[hsl(28,42%,36%)] hover:underline"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -119,7 +119,7 @@ export default function CommentsPage() {
                     <button
                       onClick={() => handleDelete(comment.id, comment.author)}
                       disabled={deleting === comment.id}
-                      className="shrink-0 p-2 rounded-lg text-[hsl(28,8%,44%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                      className="shrink-0 p-2 rounded-lg text-[hsl(28,8%,37%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                       title="Eliminar comentario"
                     >
                       {deleting === comment.id ? (

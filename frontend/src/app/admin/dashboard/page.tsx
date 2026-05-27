@@ -20,9 +20,9 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="group bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-2xl p-6 flex items-center gap-5 hover:border-[hsl(28,42%,40%)]/40 hover:shadow-md transition-all duration-200"
+      className="group bg-[hsl(38,24%,97%)] border border-[hsl(38,15%,85%)] rounded-2xl p-6 flex items-center gap-5 hover:border-[hsl(28,42%,36%)]/40 hover:shadow-md transition-all duration-200"
     >
-      <div className="w-12 h-12 rounded-xl bg-[hsl(28,42%,40%)]/10 flex items-center justify-center text-[hsl(28,42%,40%)] group-hover:bg-[hsl(28,42%,40%)]/20 transition-colors">
+      <div className="w-12 h-12 rounded-xl bg-[hsl(28,42%,36%)]/10 flex items-center justify-center text-[hsl(28,42%,36%)] group-hover:bg-[hsl(28,42%,36%)]/20 transition-colors">
         {icon}
       </div>
       <div>
@@ -33,7 +33,7 @@ function StatCard({
             value
           )}
         </p>
-        <p className="text-sm text-[hsl(28,8%,44%)] font-medium mt-0.5">{label}</p>
+        <p className="text-sm text-[hsl(28,8%,37%)] font-medium mt-0.5">{label}</p>
       </div>
     </Link>
   );
@@ -56,7 +56,7 @@ export default function DashboardPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="font-serif text-3xl font-bold text-[hsl(24,15%,15%)]">Panel de control</h1>
-          <p className="text-[hsl(28,8%,44%)] mt-1 text-sm">Resumen del estado del blog</p>
+          <p className="text-[hsl(28,8%,37%)] mt-1 text-sm">Resumen del estado del blog</p>
         </div>
 
         {error && (
@@ -107,7 +107,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Link
               href="/admin/posts/new"
-              className="flex items-center gap-3 px-5 py-4 bg-[hsl(28,42%,40%)] hover:bg-[hsl(28,42%,30%)] text-white rounded-xl font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md"
+              className="flex items-center gap-3 px-5 py-4 bg-[hsl(28,42%,36%)] hover:bg-[hsl(28,42%,30%)] text-white rounded-xl font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

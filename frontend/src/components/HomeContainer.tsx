@@ -87,7 +87,7 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
               className={`px-4 py-2 text-xs md:text-sm font-bold tracking-wide rounded-lg border font-sans transition-all duration-300 ${
                 selectedCategory === cat
                   ? 'bg-sand border-sand text-white shadow-lg shadow-sand/10'
-                  : 'bg-obsidian-card/45 border-border-subtle text-slate-500 hover:border-sand/30 hover:text-slate-800'
+                  : 'bg-obsidian-card/45 border-border-subtle text-slate-600 hover:border-sand/30 hover:text-slate-800'
               }`}
             >
               {cat}
@@ -103,7 +103,7 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
               <section className="space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-sand" />
-                  <h2 className="text-xs uppercase tracking-widest text-slate-500 font-bold font-sans">
+                  <h2 className="text-xs uppercase tracking-widest text-slate-600 font-bold font-sans">
                     Análisis Principal
                   </h2>
                 </div>
@@ -116,7 +116,7 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
               <section className="space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-sand" />
-                  <h2 className="text-xs uppercase tracking-widest text-slate-500 font-bold font-sans">
+                  <h2 className="text-xs uppercase tracking-widest text-slate-600 font-bold font-sans">
                     Informes Recientes
                   </h2>
                 </div>
@@ -129,12 +129,12 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
             )}
           </div>
         ) : (
-          <div className="text-center py-24 text-slate-500 animate-fade-in space-y-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="text-center py-24 text-slate-600 animate-fade-in space-y-3">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
             <p className="text-base font-semibold">No hay artículos publicados en esta categoría todavía.</p>
-            <p className="text-xs text-slate-400 font-medium">Por favor, consulte de nuevo más tarde o seleccione otra sección.</p>
+            <p className="text-xs text-slate-600 font-medium">Por favor, consulte de nuevo más tarde o seleccione otra sección.</p>
           </div>
         )}
 

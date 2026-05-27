@@ -89,7 +89,7 @@ export default function Footer() {
         </div>
 
         {/* Lower Footer */}
-        <div className="mt-16 border-t border-border-subtle pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="mt-16 border-t border-border-subtle pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-600">
           <p>
             © {new Date().getFullYear()} Geopolitiqué. Todos los derechos reservados.
           </p>
@@ -98,7 +98,7 @@ export default function Footer() {
               href="https://www.linkedin.com/in/sara-herrero-aina-2462ab18a/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-slate-500 hover:text-sand transition-colors font-medium"
+              className="flex items-center gap-2 text-slate-600 hover:text-sand transition-colors font-medium"
               aria-label="LinkedIn"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
