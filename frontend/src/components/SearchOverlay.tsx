@@ -51,20 +51,25 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-obsidian/95 backdrop-blur-md px-4 pt-20 md:pt-32 pb-6 overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Buscar en Geopolitiqué"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-obsidian/95 backdrop-blur-md px-4 pt-20 md:pt-32 pb-6 overflow-y-auto"
+    >
       {/* Backdrop click close */}
       <div className="absolute inset-0 -z-10" onClick={onClose} />
 
       {/* Main Panel */}
       <div className="w-full max-w-2xl bg-obsidian-card/90 border border-sand/20 rounded-2xl p-6 md:p-8 shadow-2xl relative animate-fade-in space-y-6">
-        
+
         {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 p-2 text-slate-500 hover:text-slate-900 rounded-full border border-border-subtle bg-obsidian-card hover:bg-obsidian-card-hover transition-colors focus:outline-none"
           aria-label="Cerrar búsqueda"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -89,7 +94,7 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
             onChange={(e) => setQuery(e.target.value)}
             className="w-full elegant-input pl-12 pr-4 py-4 text-base focus:outline-none"
           />
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sand">
+          <div aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-sand">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -97,7 +102,7 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
         </div>
 
         {/* Results Section */}
-        <div className="space-y-4 pt-2">
+        <div aria-live="polite" aria-label="Resultados de búsqueda" className="space-y-4 pt-2">
           {query.trim() === '' ? (
             <div className="text-center py-12 text-slate-500 text-sm space-y-2">
               <p>Comience a escribir para buscar informes especiales.</p>

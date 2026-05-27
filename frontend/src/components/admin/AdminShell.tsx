@@ -10,7 +10,7 @@ const NAV = [
     href: '/admin/dashboard',
     label: 'Panel',
     icon: (
-      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
       </svg>
@@ -20,7 +20,7 @@ const NAV = [
     href: '/admin/posts',
     label: 'Artículos',
     icon: (
-      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
@@ -30,7 +30,7 @@ const NAV = [
     href: '/admin/comments',
     label: 'Comentarios',
     icon: (
-      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
@@ -40,7 +40,7 @@ const NAV = [
     href: '/admin/newsletter',
     label: 'Newsletter',
     icon: (
-      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
           d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
@@ -76,6 +76,15 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     if (!isAuthenticated) router.replace('/admin');
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSidebarOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen]);
+
   if (!isAuthenticated) return null;
 
   return (
@@ -102,7 +111,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         {/* Brand */}
         <div className="flex items-center border-b border-[hsl(38,15%,85%)] h-[60px] px-4 shrink-0 gap-2">
           {collapsed ? (
-            <Link href="/" title="Geopolitiqué" className="mx-auto">
+            <Link href="/" aria-label="Geopolitiqué — ir al blog" className="mx-auto">
               <span className="font-serif text-xl font-extrabold text-[hsl(28,42%,40%)]">G</span>
             </Link>
           ) : (
@@ -118,10 +127,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           {/* Collapse toggle — desktop only */}
           <button
             onClick={toggleCollapse}
-            title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
+            aria-label={collapsed ? 'Expandir menú' : 'Colapsar menú'}
             className="hidden lg:flex shrink-0 p-1.5 rounded-lg text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200"
           >
             <svg
+              aria-hidden="true"
               className={`w-4 h-4 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
               fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
@@ -140,7 +150,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                title={collapsed ? item.label : undefined}
+                aria-label={collapsed ? item.label : undefined}
                 className={[
                   'flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
                   collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
@@ -160,14 +170,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <div className="px-2 py-3 border-t border-[hsl(38,15%,85%)] space-y-0.5 shrink-0">
           <Link
             href="/"
-            title={collapsed ? 'Ver blog' : undefined}
+            aria-label={collapsed ? 'Ver blog' : undefined}
             className={[
               'flex items-center gap-3 rounded-lg text-sm font-medium text-[hsl(28,8%,44%)]',
               'hover:bg-[hsl(38,24%,91%)] hover:text-[hsl(24,15%,15%)] transition-all duration-200 whitespace-nowrap',
               collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
             ].join(' ')}
           >
-            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
@@ -176,14 +186,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
           <button
             onClick={logout}
-            title={collapsed ? 'Cerrar sesión' : undefined}
+            aria-label={collapsed ? 'Cerrar sesión' : undefined}
             className={[
               'w-full flex items-center gap-3 rounded-lg text-sm font-medium',
               'text-red-500 hover:bg-red-50 transition-all duration-200 whitespace-nowrap',
               collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5',
             ].join(' ')}
           >
-            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -202,7 +212,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             className="p-2 rounded-lg text-[hsl(28,8%,44%)] hover:bg-[hsl(38,24%,91%)] transition-colors"
             aria-label="Abrir menú"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>

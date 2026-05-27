@@ -320,7 +320,7 @@ export default function PostEditor({ mode, initialSlug, initialData }: PostEdito
               <article className="flex flex-col justify-between p-5 rounded-xl border border-gray-200 bg-white shadow-sm space-y-3">
                 {imageUrl && imgOk && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={imageUrl} alt="" className="w-full h-32 object-cover rounded-lg" />
+                  <img src={imageUrl} alt="Vista previa de la imagen destacada del artículo" className="w-full h-32 object-cover rounded-lg" />
                 )}
                 <div className="flex items-center justify-between text-xs tracking-wider">
                   <span className="px-2 py-0.5 rounded-full font-semibold uppercase text-[hsl(28,42%,40%)] bg-[hsl(28,42%,40%)]/5 border border-[hsl(28,42%,40%)]/10">
