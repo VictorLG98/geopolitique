@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import AdminShell from '@/components/admin/AdminShell';
 import { useAuth } from '@/lib/auth-context';
-import { getPosts, adminDeletePost, Post } from '@/lib/api';
+import { adminGetPosts, adminDeletePost, Post } from '@/lib/api';
 
 const CATEGORIES = ['Seguridad', 'Tecnología', 'Economía', 'Política', 'General'];
 
@@ -33,12 +33,13 @@ export default function PostsPage() {
   const [search, setSearch] = useState('');
 
   const loadPosts = useCallback(() => {
+    if (!token) return;
     setLoading(true);
-    getPosts(search || undefined, filterCategory || undefined)
+    adminGetPosts(token, search || undefined, filterCategory || undefined)
       .then(setPosts)
       .catch(() => setError('Error al cargar artículos.'))
       .finally(() => setLoading(false));
-  }, [search, filterCategory]);
+  }, [token, search, filterCategory]);
 
   useEffect(() => {
     loadPosts();
