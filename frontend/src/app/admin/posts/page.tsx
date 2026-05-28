@@ -15,7 +15,7 @@ function CategoryBadge({ category }: { category: string }) {
     Economía: 'bg-green-100 text-green-700',
     Política: 'bg-orange-100 text-orange-700',
   };
-  const cls = colors[category] ?? 'bg-[hsl(225,30%,96%)] text-[hsl(220,12%,42%)]';
+  const cls = colors[category] ?? 'bg-warm-surface text-ink-muted';
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>
       {category}
@@ -71,12 +71,12 @@ export default function PostsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-[hsl(224,50%,10%)]">Artículos</h1>
-            <p className="text-[hsl(220,12%,42%)] mt-1 text-sm">{posts.length} artículos en total</p>
+            <h1 className="font-serif text-3xl font-bold text-ink">Artículos</h1>
+            <p className="text-ink-muted mt-1 text-sm">{posts.length} artículos en total</p>
           </div>
           <Link
             href="/admin/posts/new"
-            className="flex items-center gap-2 px-4 py-2.5 bg-[hsl(243,75%,51%)] hover:bg-[hsl(243,80%,40%)] text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-sage hover:bg-sage-dark text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -113,38 +113,38 @@ export default function PostsPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-[hsl(0,0%,100%)] border border-[hsl(220,18%,90%)] rounded-2xl overflow-hidden">
+        <div className="bg-warm-card border border-warm-border rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-6 h-6 border-2 border-[hsl(243,75%,51%)] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-sage border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[hsl(220,12%,42%)] text-sm">
+            <div className="p-12 text-center text-ink-muted text-sm">
               No hay artículos que coincidan.
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[hsl(220,18%,90%)]">
-                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,42%)]">Artículo</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,42%)] hidden sm:table-cell">Categoría</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,42%)] hidden md:table-cell">Fecha</th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,42%)]">Acciones</th>
+                <tr className="border-b border-warm-border">
+                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">Artículo</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink-muted hidden sm:table-cell">Categoría</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink-muted hidden md:table-cell">Fecha</th>
+                  <th className="text-right px-5 py-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[hsl(220,18%,90%)]">
+              <tbody className="divide-y divide-warm-border">
                 {filtered.map((post) => (
-                  <tr key={post.slug} className="hover:bg-[hsl(225,30%,96%)] transition-colors">
+                  <tr key={post.slug} className="hover:bg-warm-surface transition-colors">
                     <td className="px-5 py-4">
                       <div>
-                        <p className="font-semibold text-[hsl(224,50%,10%)] line-clamp-1">{post.title}</p>
-                        <p className="text-xs text-[hsl(220,12%,42%)] mt-0.5 font-mono">{post.slug}</p>
+                        <p className="font-semibold text-ink line-clamp-1">{post.title}</p>
+                        <p className="text-xs text-ink-muted mt-0.5 font-mono">{post.slug}</p>
                       </div>
                     </td>
                     <td className="px-4 py-4 hidden sm:table-cell">
                       <CategoryBadge category={post.category} />
                     </td>
-                    <td className="px-4 py-4 hidden md:table-cell text-[hsl(220,12%,42%)]">
+                    <td className="px-4 py-4 hidden md:table-cell text-ink-muted">
                       {new Date(post.published_at).toLocaleDateString('es-ES', {
                         day: '2-digit', month: 'short', year: 'numeric'
                       })}
@@ -154,7 +154,7 @@ export default function PostsPage() {
                         <Link
                           href={`/posts/${post.slug}`}
                           target="_blank"
-                          className="p-1.5 rounded-lg text-[hsl(220,12%,42%)] hover:text-[hsl(224,50%,10%)] hover:bg-[hsl(220,18%,90%)] transition-colors"
+                          className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-warm-border transition-colors"
                           title="Ver"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +166,7 @@ export default function PostsPage() {
                         </Link>
                         <Link
                           href={`/admin/posts/${post.slug}/edit`}
-                          className="p-1.5 rounded-lg text-[hsl(220,12%,42%)] hover:text-[hsl(243,75%,51%)] hover:bg-[hsl(243,75%,51%)]/10 transition-colors"
+                          className="p-1.5 rounded-lg text-ink-muted hover:text-sage hover:bg-sage/10 transition-colors"
                           title="Editar"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@ export default function PostsPage() {
                         <button
                           onClick={() => handleDelete(post.slug, post.title)}
                           disabled={deleting === post.slug}
-                          className="p-1.5 rounded-lg text-[hsl(220,12%,42%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-ink-muted hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                           title="Eliminar"
                         >
                           {deleting === post.slug ? (
