@@ -56,8 +56,8 @@ export default function CommentsPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-[hsl(224,50%,10%)]">Comentarios</h1>
-            <p className="text-[hsl(220,12%,42%)] mt-1 text-sm">{comments.length} comentarios en total</p>
+            <h1 className="font-serif text-3xl font-bold text-ink">Comentarios</h1>
+            <p className="text-ink-muted mt-1 text-sm">{comments.length} comentarios en total</p>
           </div>
         </div>
 
@@ -77,37 +77,37 @@ export default function CommentsPage() {
           />
         </div>
 
-        <div className="bg-[hsl(0,0%,100%)] border border-[hsl(220,18%,90%)] rounded-2xl overflow-hidden">
+        <div className="bg-warm-card border border-warm-border rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-6 h-6 border-2 border-[hsl(243,75%,51%)] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-sage border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[hsl(220,12%,42%)] text-sm">
+            <div className="p-12 text-center text-ink-muted text-sm">
               No hay comentarios que coincidan.
             </div>
           ) : (
-            <div className="divide-y divide-[hsl(220,18%,90%)]">
+            <div className="divide-y divide-warm-border">
               {filtered.map((comment) => (
-                <div key={comment.id} className="px-5 py-4 hover:bg-[hsl(225,30%,96%)] transition-colors">
+                <div key={comment.id} className="px-5 py-4 hover:bg-warm-surface transition-colors">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       {/* Author + date */}
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-sm text-[hsl(224,50%,10%)]">{comment.author}</span>
-                        <span className="text-xs text-[hsl(220,12%,42%)]">
+                        <span className="font-semibold text-sm text-ink">{comment.author}</span>
+                        <span className="text-xs text-ink-muted">
                           {new Date(comment.created_at).toLocaleDateString('es-ES', {
                             day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                           })}
                         </span>
                       </div>
                       {/* Content */}
-                      <p className="text-sm text-[hsl(224,50%,18%)] line-clamp-3 mb-2">{comment.content}</p>
+                      <p className="text-sm text-ink-secondary line-clamp-3 mb-2">{comment.content}</p>
                       {/* Post link */}
                       <Link
                         href={`/posts/${comment.post.slug}`}
                         target="_blank"
-                        className="inline-flex items-center gap-1 text-xs text-[hsl(243,75%,51%)] hover:underline"
+                        className="inline-flex items-center gap-1 text-xs text-sage hover:underline"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -119,7 +119,7 @@ export default function CommentsPage() {
                     <button
                       onClick={() => handleDelete(comment.id, comment.author)}
                       disabled={deleting === comment.id}
-                      className="shrink-0 p-2 rounded-lg text-[hsl(220,12%,42%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                      className="shrink-0 p-2 rounded-lg text-ink-muted hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                       title="Eliminar comentario"
                     >
                       {deleting === comment.id ? (

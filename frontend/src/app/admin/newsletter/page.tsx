@@ -64,13 +64,13 @@ export default function NewsletterPage() {
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-[hsl(224,50%,10%)]">Newsletter</h1>
-            <p className="text-[hsl(220,12%,42%)] mt-1 text-sm">{subscribers.length} suscriptores</p>
+            <h1 className="font-serif text-3xl font-bold text-ink">Newsletter</h1>
+            <p className="text-ink-muted mt-1 text-sm">{subscribers.length} suscriptores</p>
           </div>
           {subscribers.length > 0 && (
             <button
               onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[hsl(0,0%,100%)] hover:bg-[hsl(225,30%,96%)] border border-[hsl(220,18%,90%)] text-[hsl(224,50%,10%)] rounded-xl font-semibold text-sm transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-warm-card hover:bg-warm-surface border border-warm-border text-ink rounded-xl font-semibold text-sm transition-all"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -97,33 +97,33 @@ export default function NewsletterPage() {
           />
         </div>
 
-        <div className="bg-[hsl(0,0%,100%)] border border-[hsl(220,18%,90%)] rounded-2xl overflow-hidden">
+        <div className="bg-warm-card border border-warm-border rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-6 h-6 border-2 border-[hsl(243,75%,51%)] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-sage border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[hsl(220,12%,42%)] text-sm">
+            <div className="p-12 text-center text-ink-muted text-sm">
               {subscribers.length === 0 ? 'Aún no hay suscriptores.' : 'No hay coincidencias.'}
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[hsl(220,18%,90%)]">
-                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,42%)]">
+                <tr className="border-b border-warm-border">
+                  <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
                     Email
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[hsl(220,12%,42%)] hidden sm:table-cell">
+                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink-muted hidden sm:table-cell">
                     Suscrito el
                   </th>
                   <th className="text-right px-5 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[hsl(220,18%,90%)]">
+              <tbody className="divide-y divide-warm-border">
                 {filtered.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-[hsl(225,30%,96%)] transition-colors">
-                    <td className="px-5 py-3.5 font-medium text-[hsl(224,50%,10%)]">{sub.email}</td>
-                    <td className="px-4 py-3.5 text-[hsl(220,12%,42%)] hidden sm:table-cell">
+                  <tr key={sub.id} className="hover:bg-warm-surface transition-colors">
+                    <td className="px-5 py-3.5 font-medium text-ink">{sub.email}</td>
+                    <td className="px-4 py-3.5 text-ink-muted hidden sm:table-cell">
                       {new Date(sub.subscribed_at).toLocaleDateString('es-ES', {
                         day: '2-digit', month: 'short', year: 'numeric'
                       })}
@@ -132,7 +132,7 @@ export default function NewsletterPage() {
                       <button
                         onClick={() => handleDelete(sub.id, sub.email)}
                         disabled={deleting === sub.id}
-                        className="p-1.5 rounded-lg text-[hsl(220,12%,42%)] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-lg text-ink-muted hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                         title="Dar de baja"
                       >
                         {deleting === sub.id ? (

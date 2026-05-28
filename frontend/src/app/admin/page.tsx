@@ -35,25 +35,25 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(220,20%,98%)] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-warm-white px-4">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl font-extrabold text-[hsl(224,50%,10%)]">
-            Geopolitiqué<span className="text-[hsl(243,75%,51%)]">.</span>
+          <h1 className="font-serif text-3xl font-extrabold text-ink">
+            Geopolitiqué<span className="text-sage">.</span>
           </h1>
-          <p className="mt-2 text-sm text-[hsl(220,12%,42%)] uppercase tracking-widest font-semibold">
+          <p className="mt-2 text-sm text-ink-muted uppercase tracking-widest font-semibold">
             Panel de administración
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-[hsl(0,0%,100%)] border border-[hsl(220,18%,90%)] rounded-2xl p-8 shadow-sm">
+        <div className="bg-warm-card border border-warm-border rounded-2xl p-8 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
                 htmlFor="secret"
-                className="block text-sm font-semibold text-[hsl(224,50%,10%)] mb-2"
+                className="block text-sm font-semibold text-ink mb-2"
               >
                 Clave de acceso
               </label>
@@ -78,14 +78,14 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || !secret}
-              className="w-full py-3 bg-[hsl(243,75%,51%)] hover:bg-[hsl(243,80%,40%)] disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full py-3 bg-sage hover:bg-sage-dark disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-md"
             >
               {loading ? 'Verificando...' : 'Acceder'}
             </button>
           </form>
         </div>
 
-        <p className="text-center mt-6 text-xs text-[hsl(220,12%,42%)]">
+        <p className="text-center mt-6 text-xs text-ink-muted">
           Acceso restringido al equipo editorial
         </p>
       </div>

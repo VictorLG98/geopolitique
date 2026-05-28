@@ -186,10 +186,10 @@ function SlashCommandMenu({ state, onSelect, onChangeIndex }: SlashMenuProps) {
     <div
       ref={menuRef}
       style={style}
-      className="w-72 max-h-80 overflow-y-auto bg-white border border-[hsl(220,18%,90%)] rounded-xl shadow-xl py-1.5"
+      className="w-72 max-h-80 overflow-y-auto bg-white border border-warm-border rounded-xl shadow-xl py-1.5"
     >
       {state.items.length === 0 ? (
-        <p className="px-4 py-2 text-xs text-[hsl(220,12%,48%)]">Sin resultados</p>
+        <p className="px-4 py-2 text-xs text-ink-muted">Sin resultados</p>
       ) : (
         (() => {
           let absIdx = 0;
@@ -206,16 +206,16 @@ function SlashCommandMenu({ state, onSelect, onChangeIndex }: SlashMenuProps) {
                     onMouseDown={(e) => { e.preventDefault(); onSelect(item); }}
                     className={`w-full flex items-center gap-3 px-3 py-2 text-left transition-colors ${
                       idx === state.selectedIndex
-                        ? 'bg-[hsl(225,30%,95%)]'
-                        : 'hover:bg-[hsl(225,30%,97%)]'
+                        ? 'bg-warm-surface'
+                        : 'hover:bg-warm-surface'
                     }`}
                   >
-                    <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-[hsl(225,30%,95%)] text-[hsl(224,50%,15%)] text-xs font-bold shrink-0">
+                    <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-warm-surface text-ink text-xs font-bold shrink-0">
                       {item.icon}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[hsl(224,50%,10%)] leading-none mb-0.5">{item.title}</p>
-                      <p className="text-xs text-[hsl(220,12%,45%)] truncate">{item.description}</p>
+                      <p className="text-sm font-semibold text-ink leading-none mb-0.5">{item.title}</p>
+                      <p className="text-xs text-ink-muted truncate">{item.description}</p>
                     </div>
                   </button>
                 );
@@ -411,8 +411,8 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
 
   if (!editor) {
     return (
-      <div className="notion-editor-skeleton border border-[hsl(220,18%,90%)] rounded-2xl overflow-hidden">
-        <div className="h-12 bg-[hsl(225,30%,95%)] animate-pulse" />
+      <div className="notion-editor-skeleton border border-warm-border rounded-2xl overflow-hidden">
+        <div className="h-12 bg-warm-surface animate-pulse" />
         <div className="h-96 bg-white animate-pulse" />
       </div>
     );
@@ -425,26 +425,26 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
   // Shared bubble button class
   const bBtn = (active: boolean) =>
     `px-2 py-1 text-xs font-semibold rounded transition-colors ${
-      active ? 'bg-[hsl(243,75%,51%)] text-white' : 'text-white/90 hover:bg-white/15'
+      active ? 'bg-sage text-white' : 'text-white/90 hover:bg-white/15'
     }`;
 
   return (
-    <div className="notion-editor border border-[hsl(220,18%,90%)] rounded-2xl overflow-hidden bg-white">
+    <div className="notion-editor border border-warm-border rounded-2xl overflow-hidden bg-white">
 
       {/* ── Slim top bar ──────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[hsl(220,18%,90%)] bg-[hsl(0,0%,100%)]">
-        <p className="text-[10px] uppercase tracking-widest text-[hsl(220,12%,45%)] font-semibold select-none">
-          Editor de contenido — escribe <kbd className="px-1 py-0.5 bg-white border border-[hsl(220,18%,88%)] rounded text-[10px] font-mono">/</kbd> para insertar bloques
+      <div className="flex items-center justify-between px-4 py-2 border-b border-warm-border bg-warm-card">
+        <p className="text-[10px] uppercase tracking-widest text-ink-muted font-semibold select-none">
+          Editor de contenido — escribe <kbd className="px-1 py-0.5 bg-white border border-warm-border rounded text-[10px] font-mono">/</kbd> para insertar bloques
         </p>
         <div className="flex items-center gap-2">
           <button type="button" title="Deshacer" onMouseDown={e => { e.preventDefault(); editor.chain().focus().undo().run(); }}
-            className="p-1 text-[hsl(220,12%,45%)] hover:text-[hsl(224,50%,15%)] transition-colors rounded">
+            className="p-1 text-ink-muted hover:text-ink transition-colors rounded">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
             </svg>
           </button>
           <button type="button" title="Rehacer" onMouseDown={e => { e.preventDefault(); editor.chain().focus().redo().run(); }}
-            className="p-1 text-[hsl(220,12%,45%)] hover:text-[hsl(224,50%,15%)] transition-colors rounded">
+            className="p-1 text-ink-muted hover:text-ink transition-colors rounded">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"/>
             </svg>
@@ -452,7 +452,7 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
           {onUploadImage && (
             <button type="button" title={imgUploading ? 'Subiendo…' : 'Insertar imagen'} disabled={imgUploading}
               onMouseDown={e => { e.preventDefault(); imgInputRef.current?.click(); }}
-              className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-[hsl(220,12%,45%)] hover:text-[hsl(243,75%,51%)] transition-colors rounded hover:bg-[hsl(225,30%,96%)] disabled:opacity-40">
+              className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-ink-muted hover:text-sage transition-colors rounded hover:bg-warm-surface disabled:opacity-40">
               {imgUploading
                 ? <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                 : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
@@ -465,7 +465,7 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
 
       {/* ── Bubble menu (text selection) ───────────────────────────── */}
       <BubbleMenu editor={editor}>
-        <div className="flex flex-wrap items-center gap-0.5 p-1.5 bg-[hsl(243,50%,18%)] rounded-xl shadow-2xl border border-white/10 max-w-sm">
+        <div className="flex flex-wrap items-center gap-0.5 p-1.5 bg-ink rounded-xl shadow-2xl border border-white/10 max-w-sm">
           {/* Format */}
           <button type="button" onMouseDown={e => { e.preventDefault(); editor.chain().focus().toggleBold().run(); }} className={bBtn(editor.isActive('bold'))}><strong>B</strong></button>
           <button type="button" onMouseDown={e => { e.preventDefault(); editor.chain().focus().toggleItalic().run(); }} className={bBtn(editor.isActive('italic'))}><em>I</em></button>
@@ -512,11 +512,11 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
       <input ref={imgInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
 
       {/* ── Footer stats ──────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-[hsl(220,18%,90%)] bg-[hsl(0,0%,100%)] text-[10px] text-[hsl(220,12%,45%)] font-mono select-none">
+      <div className="flex items-center justify-between px-4 py-2 border-t border-warm-border bg-warm-card text-[10px] text-ink-muted font-mono select-none">
         <span>
-          <kbd className="px-1 bg-white border border-[hsl(220,18%,88%)] rounded text-[9px]">/</kbd>
-          {' '}bloques · <kbd className="px-1 bg-white border border-[hsl(220,18%,88%)] rounded text-[9px]">Ctrl+B</kbd> negrita ·{' '}
-          <kbd className="px-1 bg-white border border-[hsl(220,18%,88%)] rounded text-[9px]">Ctrl+I</kbd> cursiva
+          <kbd className="px-1 bg-white border border-warm-border rounded text-[9px]">/</kbd>
+          {' '}bloques · <kbd className="px-1 bg-white border border-warm-border rounded text-[9px]">Ctrl+B</kbd> negrita ·{' '}
+          <kbd className="px-1 bg-white border border-warm-border rounded text-[9px]">Ctrl+I</kbd> cursiva
         </span>
         <span>{wordCount} palabras · {charCount} chars</span>
       </div>
