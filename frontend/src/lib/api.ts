@@ -142,6 +142,14 @@ export async function getAdminStats(token: string): Promise<AdminStats> {
   return adminFetch<AdminStats>('/api/admin/stats', token);
 }
 
+export async function adminGetPosts(token: string, q?: string, category?: string): Promise<Post[]> {
+  const params = new URLSearchParams();
+  if (q) params.append('q', q);
+  if (category) params.append('category', category);
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+  return adminFetch<Post[]>(`/api/posts${queryString}`, token, { cache: 'no-store' });
+}
+
 export async function adminCreatePost(token: string, data: PostCreateInput): Promise<Post> {
   return adminFetch<Post>('/api/admin/posts', token, {
     method: 'POST',
