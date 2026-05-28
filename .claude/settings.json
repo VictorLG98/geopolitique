@@ -17,7 +17,31 @@
       "Skill(compress:*)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)\\); print\\('devdeps:', list\\(d.get\\('devDependencies',{}\\).keys\\(\\)\\)\\)\")",
       "Bash(xargs sed -i '' 's/28,42%,40%/28,42%,36%/g; s/28, 42%, 40%/28, 42%, 36%/g')",
-      "Bash(xargs sed -i '' 's/28,8%,44%/28,8%,37%/g; s/28, 8%, 44%/28, 8%, 37%/g')"
+      "Bash(xargs sed -i '' 's/28,8%,44%/28,8%,37%/g; s/28, 8%, 44%/28, 8%, 37%/g')",
+      "Bash(echo \"PID=$!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(cat /tmp/next-dev.log | grep -E \"error|Error|warn|compiled|ready\" | head -20)",
+      "Read(//private/tmp/**)",
+      "Bash(ls /Applications/ | grep -i \"chrome\\\\|chromium\\\\|safari\\\\|firefox\" 2>/dev/null)",
+      "Read(//Applications/**)",
+      "Bash(osascript)",
+      "Bash(open -a Safari http://localhost:3000)",
+      "Bash(screencapture -x /tmp/home.png)",
+      "Bash(open http://localhost:3000)",
+      "Bash(screencapture /tmp/home.png)",
+      "Read(//tmp/**)",
+      "Bash(screencapture /tmp/home2.png)",
+      "Bash(open http://localhost:3000/posts/batalla-soberania-artica)",
+      "Bash(screencapture /tmp/post.png)",
+      "Bash(screencapture /tmp/post2.png)",
+      "Bash(screencapture /tmp/home3.png)",
+      "Bash(screencapture /tmp/final-home.png)",
+      "Bash(screencapture /tmp/final-home2.png)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(npm run dev > /tmp/next-warm.log 2>&1 & *)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
     ]
   }
 }

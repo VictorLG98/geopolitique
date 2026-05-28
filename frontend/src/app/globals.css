@@ -1,107 +1,164 @@
 @import "tailwindcss";
 
+/* ── CSS variables (legacy - kept for admin compatibility) ────────────────── */
 :root {
-  /* HSL Color Palette - Warm Light Theme (Paper & Clay) */
-  --bg-paper: 38 24% 94%;        /* #f4f1eb - Warm alabaster, highly eye-friendly */
-  --bg-card: 38 24% 97%;         /* #fbfaf8 - Soft linen white card */
-  --bg-card-hover: 38 24% 91%;   /* #eae5db - Soft linen grey */
-  
-  --color-clay: 28 42% 36%;      /* #82593a - WCAG AA ≥4.5:1 on paper bg */
-  --color-clay-light: 28 42% 46%;
-  --color-clay-dark: 28 42% 26%;
+  --bg-paper: 220 20% 98%;
+  --bg-card: 0 0% 100%;
+  --bg-card-hover: 225 30% 96%;
 
-  --text-primary: 24 15% 15%;    /* #2c2521 - Soft deep espresso, zero glare */
-  --text-muted: 28 8% 37%;       /* #635e5a - WCAG AA ≥4.5:1 on paper bg */
+  --color-clay: 243 75% 51%;
+  --color-clay-light: 243 65% 62%;
+  --color-clay-dark: 243 80% 40%;
 
-  --border-subtle: 38 15% 85%;   /* #e2ded7 - Subtly contrasting warm sand border */
-  --border-focus: 28 42% 36%;
-  
+  --text-primary: 224 50% 10%;
+  --text-muted: 220 12% 42%;
+
+  --border-subtle: 220 18% 90%;
+  --border-focus: 243 75% 51%;
+
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
 }
 
+/* ── Design tokens ────────────────────────────────────────────────────────── */
 @theme {
-  --font-serif: var(--font-serif), Georgia, serif;
-  --font-sans: var(--font-sans), system-ui, sans-serif;
-  --color-sand: hsl(28 42% 36%);
-  --color-sand-light: hsl(28 42% 46%);
-  --color-sand-dark: hsl(28 42% 26%);
-  
-  --color-obsidian: hsl(38 24% 94%);
-  --color-obsidian-card: hsl(38 24% 97%);
-  --color-obsidian-card-hover: hsl(38 24% 91%);
-  --color-border-subtle: hsl(38 15% 85%);
+  /* ── Warm light surfaces ── */
+  --color-warm-white:      #FAFAF8;   /* page canvas */
+  --color-warm-surface:    #F3F1EC;   /* alternate section bg */
+  --color-warm-card:       #FFFFFF;   /* card / elevated surface */
+  --color-warm-card-hover: #F8F7F3;   /* card hover state */
+
+  /* ── Borders ── */
+  --color-warm-border:       #E5E2DB;  /* default border */
+  --color-warm-border-strong: #C8C4BB; /* emphasized border */
+
+  /* ── Sage green – primary accent ──
+     Intellectual, editorial, warm – not over-saturated.
+     Chosen for distinctiveness and WCAG AA compliance. */
+  --color-sage:        #2C6B5C;   /* primary interactive / accent */
+  --color-sage-light:  #3B8270;   /* hover */
+  --color-sage-dark:   #1D4D41;   /* pressed / active */
+  --color-sage-subtle: #ECF4F1;   /* very light sage tint */
+
+  /* ── Text hierarchy ── */
+  --color-ink:           #1A1C19;   /* headings / primary */
+  --color-ink-secondary: #505650;   /* body text */
+  --color-ink-muted:     #8B9087;   /* metadata / captions */
+
+  /* ── Legacy tokens (admin & fallbacks) ── */
+  --color-sand:             hsl(243 75% 51%);
+  --color-sand-light:       hsl(243 65% 62%);
+  --color-sand-dark:        hsl(243 80% 40%);
+  --color-obsidian:         hsl(220 20% 98%);
+  --color-obsidian-card:    hsl(0 0% 100%);
+  --color-obsidian-card-hover: hsl(225 30% 96%);
+  --color-border-subtle:    hsl(220 18% 90%);
+
+  /* Legacy dark tokens kept for any residual references */
+  --color-ink-surface:      #F3F1EC;
+  --color-ink-card:         #FFFFFF;
+  --color-ink-card-hover:   #F8F7F3;
+  --color-ink-border:       #E5E2DB;
+  --color-ink-border-hover: #C8C4BB;
+  --color-gold:             #2C6B5C;
+  --color-gold-light:       #3B8270;
+  --color-gold-dark:        #1D4D41;
+  --color-parchment:        #1A1C19;
+  --color-parchment-muted:  #8B9087;
 }
 
-/* Base Body Override */
-body {
-  background-color: hsl(var(--bg-paper));
-  color: hsl(var(--text-primary));
-  font-family: var(--font-sans);
-}
+/* ── Custom scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F3F1EC; }
+::-webkit-scrollbar-thumb { background: #C8C4BB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2C6B5C60; }
 
-/* Custom Scrollbar for premium feel */
-::-webkit-scrollbar {
-  width: 8px;
+/* ── Animations ───────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-::-webkit-scrollbar-track {
-  background: hsl(var(--bg-paper));
-}
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border-subtle));
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--color-clay) / 0.5);
-}
-
-/* Serif Headings Helper */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif);
-  letter-spacing: -0.02em;
-  color: hsl(var(--text-primary));
-}
-
-/* Custom Micro-Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-fade-up  { animation: fadeUp  0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in  { animation: fadeIn  0.45s ease forwards; }
+.animate-slide-in { animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.delay-100 { animation-delay: 0.10s; }
+.delay-200 { animation-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; }
+.delay-400 { animation-delay: 0.40s; }
+
+/* ── Focus ring ───────────────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid #2C6B5C;
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
-/* Glassmorphism Panel (Light variant) */
-.glass-panel {
-  background: rgba(251, 250, 248, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(163, 93, 61, 0.08);
-}
-
-.glass-panel:hover {
-  border-color: rgba(163, 93, 61, 0.20);
-  box-shadow: 0 8px 30px rgba(44, 37, 33, 0.05);
-}
-
-/* Elegant Text Inputs */
+/* ── Elegant inputs (admin forms) ─────────────────────────────────────────── */
 .elegant-input {
-  background: rgba(244, 241, 235, 0.6);
-  border: 1px solid rgba(163, 93, 61, 0.15);
+  background: rgba(238, 240, 248, 0.5);
+  border: 1px solid rgba(67, 56, 202, 0.16);
   border-radius: 6px;
   color: hsl(var(--text-primary));
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .elegant-input:focus {
   outline: none;
   border-color: hsl(var(--color-clay));
-  box-shadow: 0 0 0 2px rgba(163, 93, 61, 0.15);
-  background: rgba(251, 250, 248, 0.9);
+  box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.14);
+  background: rgba(255, 255, 255, 0.95);
 }
 
-/* ── TipTap editor area ────────────────────────────────────────────────── */
+/* ── Warm inputs (public comment form) ────────────────────────────────────── */
+.warm-input {
+  background: #FAFAF8;
+  border: 1px solid #E5E2DB;
+  border-radius: 7px;
+  color: #1A1C19;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.warm-input::placeholder { color: #8B9087; }
+.warm-input:focus {
+  outline: none;
+  border-color: #2C6B5C;
+  box-shadow: 0 0 0 3px #2C6B5C18;
+  background: #FFFFFF;
+}
+
+/* ── Glass panel (admin) ──────────────────────────────────────────────────── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(67, 56, 202, 0.09);
+}
+.glass-panel:hover {
+  border-color: rgba(67, 56, 202, 0.20);
+  box-shadow: 0 6px 24px rgba(13, 20, 38, 0.07);
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TIPTAP / PROSEMIRROR (admin editor – preserved as-is)
+   ══════════════════════════════════════════════════════════════════ */
 .ProseMirror {
   min-height: 400px;
   padding: 1rem 1.25rem;
@@ -110,7 +167,6 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.9375rem;
   line-height: 1.75;
 }
-
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   color: hsl(var(--text-muted));
@@ -118,15 +174,15 @@ h1, h2, h3, h4, h5, h6 {
   float: left;
   height: 0;
 }
-
-/* ── Shared rich-text styles (editor + public display) ─────────────────── */
-.ProseMirror,
-.rich-content {
+.ProseMirror h1 {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 2.2rem 0 0.75rem;
   color: hsl(var(--text-primary));
+  line-height: 1.2;
 }
-
-.ProseMirror h2,
-.rich-content h2 {
+.ProseMirror h2 {
   font-family: var(--font-serif);
   font-size: 1.45rem;
   font-weight: 700;
@@ -134,55 +190,25 @@ h1, h2, h3, h4, h5, h6 {
   color: hsl(var(--text-primary));
   letter-spacing: -0.02em;
 }
-
-.ProseMirror h3,
-.rich-content h3 {
+.ProseMirror h3 {
   font-family: var(--font-serif);
   font-size: 1.2rem;
   font-weight: 600;
   margin: 1.4rem 0 0.5rem;
   color: hsl(var(--text-primary));
 }
-
-.ProseMirror p,
-.rich-content p {
-  margin: 0 0 0.9rem;
-  color: hsl(24 10% 25%);
-  line-height: 1.8;
-}
-
-.ProseMirror ul,
-.rich-content ul {
-  list-style: disc;
-  padding-left: 1.5rem;
-  margin: 0.75rem 0;
-}
-
-.ProseMirror ol,
-.rich-content ol {
-  list-style: decimal;
-  padding-left: 1.5rem;
-  margin: 0.75rem 0;
-}
-
-.ProseMirror li,
-.rich-content li {
-  margin: 0.25rem 0;
-  color: hsl(24 10% 25%);
-  line-height: 1.7;
-}
-
-.ProseMirror blockquote,
-.rich-content blockquote {
+.ProseMirror p { margin: 0 0 0.9rem; color: hsl(24 10% 25%); line-height: 1.8; }
+.ProseMirror ul { list-style: disc; padding-left: 1.5rem; margin: 0.75rem 0; }
+.ProseMirror ol { list-style: decimal; padding-left: 1.5rem; margin: 0.75rem 0; }
+.ProseMirror li { margin: 0.25rem 0; color: hsl(24 10% 25%); line-height: 1.7; }
+.ProseMirror blockquote {
   border-left: 3px solid hsl(var(--color-clay));
   margin: 1.25rem 0;
   padding: 0.5rem 0 0.5rem 1.25rem;
   color: hsl(var(--text-muted));
   font-style: italic;
 }
-
-.ProseMirror code,
-.rich-content code {
+.ProseMirror code {
   background: hsl(var(--bg-card-hover));
   border: 1px solid hsl(var(--border-subtle));
   border-radius: 4px;
@@ -191,173 +217,22 @@ h1, h2, h3, h4, h5, h6 {
   font-family: ui-monospace, monospace;
   color: hsl(var(--color-clay-dark));
 }
-
-.ProseMirror pre,
-.rich-content pre {
-  background: hsl(var(--text-primary));
+.ProseMirror pre {
+  background: hsl(224 50% 10%);
   border-radius: 8px;
   margin: 1rem 0;
   padding: 1rem 1.25rem;
   overflow-x: auto;
 }
-
-.ProseMirror pre code,
-.rich-content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  color: hsl(38 24% 88%);
-  font-size: 0.875rem;
-}
-
-.ProseMirror a,
-.rich-content a {
-  color: hsl(var(--color-clay));
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.ProseMirror a:hover,
-.rich-content a:hover {
-  color: hsl(var(--color-clay-dark));
-}
-
-.ProseMirror hr,
-.rich-content hr {
-  border: none;
-  border-top: 1px solid hsl(var(--border-subtle));
-  margin: 1.75rem 0;
-}
-
-.ProseMirror strong,
-.rich-content strong {
-  font-weight: 700;
-  color: hsl(var(--text-primary));
-}
-
-.ProseMirror em,
-.rich-content em {
-  font-style: italic;
-}
-
-.ProseMirror [data-text-align='center'],
-.rich-content [data-text-align='center'],
-.ProseMirror .text-center,
-.rich-content .text-center { text-align: center; }
-
-.ProseMirror [data-text-align='right'],
-.rich-content [data-text-align='right'],
-.ProseMirror .text-right,
-.rich-content .text-right  { text-align: right; }
-
-/* ── H1 (used inside editor as article section hero) ─────────────────────── */
-.ProseMirror h1,
-.rich-content h1 {
-  font-family: var(--font-serif);
-  font-size: 1.9rem;
-  font-weight: 800;
-  margin: 2.2rem 0 0.75rem;
-  color: hsl(var(--text-primary));
-  line-height: 1.2;
-}
-
-/* ── Task lists ──────────────────────────────────────────────────────────── */
-.ProseMirror ul[data-type='taskList'],
-.rich-content ul[data-type='taskList'] {
-  list-style: none;
-  padding: 0;
-  margin: 0.75rem 0;
-}
-.ProseMirror ul[data-type='taskList'] li,
-.rich-content ul[data-type='taskList'] li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  margin: 0.3rem 0;
-}
-.ProseMirror ul[data-type='taskList'] li > label,
-.rich-content ul[data-type='taskList'] li > label {
-  flex-shrink: 0;
-  margin-top: 0.15rem;
-}
-.ProseMirror ul[data-type='taskList'] li > label input[type='checkbox'],
-.rich-content ul[data-type='taskList'] li > label input[type='checkbox'] {
-  width: 1rem;
-  height: 1rem;
-  accent-color: hsl(var(--color-clay));
-  cursor: pointer;
-}
-.ProseMirror ul[data-type='taskList'] li[data-checked='true'] > div,
-.rich-content ul[data-type='taskList'] li[data-checked='true'] > div {
-  opacity: 0.5;
-  text-decoration: line-through;
-}
-
-/* ── Tables ──────────────────────────────────────────────────────────────── */
-.ProseMirror table,
-.rich-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-  font-size: 0.9rem;
-  overflow: auto;
-  display: block;
-}
-.ProseMirror th,
-.rich-content th {
-  background: hsl(var(--bg-paper));
-  font-weight: 700;
-  text-align: left;
-  padding: 0.55rem 0.85rem;
-  border: 1px solid hsl(var(--border-subtle));
-  color: hsl(var(--text-primary));
-}
-.ProseMirror td,
-.rich-content td {
-  padding: 0.5rem 0.85rem;
-  border: 1px solid hsl(var(--border-subtle));
-  vertical-align: top;
-}
-.ProseMirror .selectedCell,
-.rich-content .selectedCell {
-  background: hsl(var(--color-clay) / 0.08);
-}
-.ProseMirror .column-resize-handle {
-  position: absolute;
-  right: -2px;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: hsl(var(--color-clay) / 0.4);
-  pointer-events: none;
-}
-.ProseMirror .tableWrapper {
-  overflow-x: auto;
-  margin: 1.5rem 0;
-}
-
-/* ── Images ──────────────────────────────────────────────────────────────── */
-.ProseMirror img,
-.rich-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin: 1.25rem auto;
-  display: block;
-}
-.ProseMirror img.ProseMirror-selectednode {
-  outline: 3px solid hsl(var(--color-clay));
-  outline-offset: 2px;
-}
-
-/* ── Highlight ───────────────────────────────────────────────────────────── */
-.ProseMirror mark,
-.rich-content mark {
-  border-radius: 2px;
-  padding: 0 2px;
-}
-
-/* ── Placeholder per-node ────────────────────────────────────────────────── */
+.ProseMirror pre code { background: none; border: none; padding: 0; color: hsl(38 24% 88%); font-size: 0.875rem; }
+.ProseMirror a { color: hsl(var(--color-clay)); text-decoration: underline; text-underline-offset: 3px; }
+.ProseMirror a:hover { color: hsl(var(--color-clay-dark)); }
+.ProseMirror hr { border: none; border-top: 1px solid hsl(var(--border-subtle)); margin: 1.75rem 0; }
+.ProseMirror strong { font-weight: 700; color: hsl(var(--text-primary)); }
+.ProseMirror em { font-style: italic; }
+.ProseMirror [data-text-align='center'], .ProseMirror .text-center { text-align: center; }
+.ProseMirror [data-text-align='right'],  .ProseMirror .text-right  { text-align: right; }
+.ProseMirror mark { border-radius: 2px; padding: 0 2px; }
 .ProseMirror p.is-editor-empty:first-child::before,
 .ProseMirror .is-empty::before {
   content: attr(data-placeholder);
@@ -367,32 +242,111 @@ h1, h2, h3, h4, h5, h6 {
   height: 0;
   font-style: italic;
 }
+/* Task lists */
+.ProseMirror ul[data-type='taskList'] { list-style: none; padding: 0; margin: 0.75rem 0; }
+.ProseMirror ul[data-type='taskList'] li { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.3rem 0; }
+.ProseMirror ul[data-type='taskList'] li > label { flex-shrink: 0; margin-top: 0.15rem; }
+.ProseMirror ul[data-type='taskList'] li > label input[type='checkbox'] {
+  width: 1rem; height: 1rem; accent-color: hsl(var(--color-clay)); cursor: pointer;
+}
+.ProseMirror ul[data-type='taskList'] li[data-checked='true'] > div { opacity: 0.5; text-decoration: line-through; }
+/* Tables */
+.ProseMirror table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; overflow: auto; display: block; }
+.ProseMirror th { background: hsl(var(--bg-paper)); font-weight: 700; text-align: left; padding: 0.55rem 0.85rem; border: 1px solid hsl(var(--border-subtle)); color: hsl(var(--text-primary)); }
+.ProseMirror td { padding: 0.5rem 0.85rem; border: 1px solid hsl(var(--border-subtle)); vertical-align: top; }
+.ProseMirror .selectedCell { background: hsl(var(--color-clay) / 0.08); }
+.ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: hsl(var(--color-clay) / 0.4); pointer-events: none; }
+.ProseMirror .tableWrapper { overflow-x: auto; margin: 1.5rem 0; }
+/* Images */
+.ProseMirror img { max-width: 100%; height: auto; border-radius: 8px; margin: 1.25rem auto; display: block; }
+.ProseMirror img.ProseMirror-selectednode { outline: 3px solid hsl(var(--color-clay)); outline-offset: 2px; }
 
-/* Global focus-visible ring for keyboard accessibility */
-*:focus-visible {
-  outline: 2px solid hsl(var(--border-focus));
-  outline-offset: 2px;
+/* ══════════════════════════════════════════════════════════════════
+   PUBLIC RICH CONTENT  (warm light editorial reading surface)
+   ══════════════════════════════════════════════════════════════════ */
+.rich-content {
+  color: #505650;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.82;
 }
+.rich-content h1 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 2rem 0 0.75rem;
+  color: #1A1C19;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+.rich-content h2 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 1.8rem 0 0.6rem;
+  color: #1A1C19;
+  letter-spacing: -0.018em;
+}
+.rich-content h3 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.4rem 0 0.5rem;
+  color: #1A1C19;
+}
+.rich-content p { margin: 0 0 1rem; color: #505650; line-height: 1.82; }
+.rich-content ul { list-style: disc; padding-left: 1.5rem; margin: 0.75rem 0; }
+.rich-content ol { list-style: decimal; padding-left: 1.5rem; margin: 0.75rem 0; }
+.rich-content li { margin: 0.3rem 0; color: #505650; line-height: 1.75; }
+.rich-content blockquote {
+  border-left: 3px solid #2C6B5C;
+  margin: 1.5rem 0;
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  color: #8B9087;
+  font-style: italic;
+  background: #ECF4F1;
+  border-radius: 0 6px 6px 0;
+}
+.rich-content code {
+  background: #F3F1EC;
+  border: 1px solid #E5E2DB;
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.855em;
+  font-family: ui-monospace, monospace;
+  color: #2C6B5C;
+}
+.rich-content pre {
+  background: #1A1C19;
+  border: 1px solid #2E3230;
+  border-radius: 9px;
+  margin: 1.25rem 0;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+}
+.rich-content pre code { background: none; border: none; padding: 0; color: #D4D6CE; font-size: 0.875rem; }
+.rich-content a { color: #2C6B5C; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
+.rich-content a:hover { color: #1D4D41; }
+.rich-content hr { border: none; border-top: 1px solid #E5E2DB; margin: 2rem 0; }
+.rich-content strong { font-weight: 700; color: #1A1C19; }
+.rich-content em { font-style: italic; }
+.rich-content img { max-width: 100%; height: auto; border-radius: 9px; margin: 1.5rem auto; display: block; border: 1px solid #E5E2DB; }
+.rich-content mark { background: #2C6B5C18; border-radius: 2px; padding: 0 3px; color: inherit; }
+.rich-content [data-text-align='center'], .rich-content .text-center { text-align: center; }
+.rich-content [data-text-align='right'],  .rich-content .text-right  { text-align: right; }
+.rich-content table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; display: block; overflow-x: auto; }
+.rich-content th { background: #F3F1EC; font-weight: 700; text-align: left; padding: 0.6rem 0.9rem; border: 1px solid #E5E2DB; color: #1A1C19; }
+.rich-content td { padding: 0.55rem 0.9rem; border: 1px solid #E5E2DB; color: #505650; vertical-align: top; }
+.rich-content ul[data-type='taskList'] { list-style: none; padding: 0; margin: 0.75rem 0; }
+.rich-content ul[data-type='taskList'] li { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.3rem 0; }
+.rich-content ul[data-type='taskList'] li > label { flex-shrink: 0; margin-top: 0.15rem; }
+.rich-content ul[data-type='taskList'] li > label input[type='checkbox'] {
+  width: 1rem; height: 1rem; accent-color: #2C6B5C; cursor: pointer;
+}
+.rich-content ul[data-type='taskList'] li[data-checked='true'] > div { opacity: 0.5; text-decoration: line-through; }
 
-/* Respect reduced-motion preference */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Override prose colors in light mode */
-.prose {
-  color: hsl(var(--text-primary));
-}
-.prose strong {
-  color: hsl(var(--text-primary)) !important;
-}
-.prose h1, .prose h2, .prose h3 {
-  color: hsl(var(--text-primary)) !important;
-}
-.prose p {
-  color: hsl(24 10% 25%) !important;
-}
+/* ── Admin prose overrides ────────────────────────────────────────────────── */
+.prose { color: hsl(var(--text-primary)); }
+.prose strong { color: hsl(var(--text-primary)) !important; }
+.prose h1, .prose h2, .prose h3 { color: hsl(var(--text-primary)) !important; }
+.prose p { color: hsl(24 10% 25%) !important; }

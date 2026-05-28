@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { MagnifyingGlass, X, Clock } from '@phosphor-icons/react';
 import { Post } from '@/lib/api';
 
 interface SearchOverlayProps {
@@ -14,31 +15,24 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input on open
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-      document.body.style.overflow = 'hidden'; // Lock background scroll
+      setTimeout(() => inputRef.current?.focus(), 80);
+      document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-  // Handle ESC key press
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
   if (!isOpen) return null;
 
-  // Filter posts client-side in real-time
   const filteredPosts = posts.filter((post) => {
     const term = query.toLowerCase().trim();
     if (!term) return false;
@@ -55,92 +49,85 @@ export default function SearchOverlay({ isOpen, onClose, posts }: SearchOverlayP
       role="dialog"
       aria-modal="true"
       aria-label="Buscar en Geopolitiqué"
-      className="fixed inset-0 z-50 flex items-start justify-center bg-obsidian/95 backdrop-blur-md px-4 pt-20 md:pt-32 pb-6 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-ink/30 backdrop-blur-sm px-4 pt-16 md:pt-24 pb-6 overflow-y-auto"
     >
-      {/* Backdrop click close */}
       <div className="absolute inset-0 -z-10" onClick={onClose} />
 
-      {/* Main Panel */}
-      <div className="w-full max-w-2xl bg-obsidian-card/90 border border-sand/20 rounded-2xl p-6 md:p-8 shadow-2xl relative animate-fade-in space-y-6">
+      <div className="w-full max-w-xl bg-warm-card border border-warm-border rounded-2xl p-6 shadow-[0_20px_60px_rgba(26,28,25,0.15)] relative animate-fade-up space-y-5">
 
-        {/* Close Button */}
+        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 p-2 text-slate-500 hover:text-slate-900 rounded-full border border-border-subtle bg-obsidian-card hover:bg-obsidian-card-hover transition-colors focus:outline-none"
+          className="absolute right-4 top-4 p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-warm-surface transition-colors"
           aria-label="Cerrar búsqueda"
         >
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <X weight="bold" className="h-4 w-4" />
         </button>
 
         {/* Header */}
-        <div className="space-y-1 pr-8">
-          <span className="text-[10px] uppercase tracking-widest text-sand font-bold">
-            Buscador Dinámico
-          </span>
-          <h2 className="font-serif text-2xl font-bold text-slate-900">
-            Buscar en Geopolitiqué
-          </h2>
+        <div className="pr-8">
+          <h2 className="font-serif text-xl font-bold text-ink">Buscar análisis</h2>
         </div>
 
-        {/* Input Field */}
+        {/* Input */}
         <div className="relative">
+          <MagnifyingGlass weight="regular" className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-sage" />
           <input
             ref={inputRef}
             type="text"
-            placeholder="Escriba palabras clave (por ejemplo: Ártico, Silicio, Litio)..."
+            placeholder="Ártico, Taiwán, Litio..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full elegant-input pl-12 pr-4 py-4 text-base focus:outline-none"
+            className="w-full warm-input pl-10 pr-4 py-3"
           />
-          <div aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-sand">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
         </div>
 
-        {/* Results Section */}
-        <div aria-live="polite" aria-label="Resultados de búsqueda" className="space-y-4 pt-2">
+        {/* Results */}
+        <div aria-live="polite" className="space-y-3">
           {query.trim() === '' ? (
-            <div className="text-center py-12 text-slate-600 text-sm space-y-2">
-              <p>Comience a escribir para buscar informes especiales.</p>
-              <div className="flex justify-center gap-2 pt-2 text-xs">
-                <button onClick={() => setQuery('Ártico')} className="px-2.5 py-1 rounded bg-obsidian-card border border-border-subtle text-slate-600 hover:border-sand/30 hover:text-sand transition-all font-semibold">#Ártico</button>
-                <button onClick={() => setQuery('Taiwán')} className="px-2.5 py-1 rounded bg-obsidian-card border border-border-subtle text-slate-600 hover:border-sand/30 hover:text-sand transition-all font-semibold">#Taiwán</button>
-                <button onClick={() => setQuery('Litio')} className="px-2.5 py-1 rounded bg-obsidian-card border border-border-subtle text-slate-600 hover:border-sand/30 hover:text-sand transition-all font-semibold">#Litio</button>
+            <div className="text-center py-8 space-y-3">
+              <p className="text-ink-secondary text-sm">Comience a escribir para buscar informes.</p>
+              <div className="flex justify-center gap-2 flex-wrap">
+                {['Ártico', 'Taiwán', 'Litio'].map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setQuery(tag)}
+                    className="px-3 py-1 rounded-full text-[12px] font-semibold border border-warm-border text-ink-secondary hover:border-sage/40 hover:text-sage hover:bg-sage-subtle transition-all duration-150"
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
             </div>
           ) : filteredPosts.length > 0 ? (
-            <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-              <p className="text-xs text-sand font-bold uppercase tracking-wider">
-                Resultados de búsqueda ({filteredPosts.length})
+            <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
+              <p className="text-[11px] text-sage font-semibold uppercase tracking-wider">
+                {filteredPosts.length} resultado{filteredPosts.length !== 1 ? 's' : ''}
               </p>
               {filteredPosts.map((post) => (
                 <Link
                   key={post.id}
                   href={`/posts/${post.slug}`}
                   onClick={onClose}
-                  className="block p-4 rounded-xl border border-border-subtle bg-obsidian-card/40 hover:bg-obsidian-card-hover/80 hover:border-sand/20 transition-all duration-200 group shadow-sm"
+                  className="block p-4 rounded-xl border border-warm-border bg-warm-white hover:border-warm-border-strong hover:bg-warm-card transition-all duration-150 group"
                 >
-                  <div className="flex items-center justify-between text-[10px] uppercase tracking-wider mb-1.5 font-bold">
-                    <span className="text-sand">{post.category}</span>
-                    <span className="text-slate-600">{post.read_time} min</span>
+                  <div className="flex items-center justify-between text-[11px] mb-1.5">
+                    <span className="text-sage font-bold uppercase tracking-wider">{post.category}</span>
+                    <span className="text-ink-muted flex items-center gap-1">
+                      <Clock weight="regular" className="w-3 h-3" />
+                      {post.read_time} min
+                    </span>
                   </div>
-                  <h4 className="font-serif text-base md:text-lg font-bold text-slate-900 group-hover:text-sand transition-colors leading-tight">
+                  <h4 className="font-serif text-[1rem] font-semibold text-ink group-hover:text-sage transition-colors leading-snug">
                     {post.title}
                   </h4>
-                  <p className="text-xs text-slate-600 mt-1 line-clamp-1 font-sans font-medium">
-                    {post.summary}
-                  </p>
+                  <p className="text-[12px] text-ink-muted mt-1 line-clamp-1">{post.summary}</p>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-600 text-sm">
-              <p>No se encontraron análisis que coincidan con &ldquo;{query}&rdquo;.</p>
-              <p className="text-xs text-slate-600 mt-1">Pruebe con otros términos de búsqueda.</p>
+            <div className="text-center py-8 text-ink-muted text-sm">
+              Sin resultados para &ldquo;{query}&rdquo;.
             </div>
           )}
         </div>

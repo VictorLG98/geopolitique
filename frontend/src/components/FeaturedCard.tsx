@@ -1,5 +1,10 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { motion, useReducedMotion } from 'motion/react';
+import { ArrowRight, Clock } from '@phosphor-icons/react';
 import { Post } from '@/lib/api';
 
 interface FeaturedCardProps {
@@ -7,6 +12,8 @@ interface FeaturedCardProps {
 }
 
 export default function FeaturedCard({ post }: FeaturedCardProps) {
+  const reduce = useReducedMotion();
+
   const formattedDate = new Date(post.published_at).toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
@@ -14,86 +21,89 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
   });
 
   return (
-    <article className="glass-panel rounded-2xl overflow-hidden border border-sand/10 bg-obsidian-card/45 hover:border-sand/30 transition-all duration-500 animate-fade-in shadow-sm">
-      <div className="grid grid-cols-1 lg:grid-cols-12">
-        
-        {/* Left Side: Solid Abstract Editorial Accent (Warm Light Gradient) */}
-        <div className="lg:col-span-4 relative bg-gradient-to-br from-[#eae5db] to-[#f4f1eb] p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-sand/5 select-none min-h-[220px]">
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase tracking-widest text-sand font-extrabold bg-sand/5 border border-sand/10 px-2.5 py-1 rounded-full">
-              DESTACADO
-            </span>
-          </div>
-          
-          {/* Abstract SVG illustration representing global maps / routes */}
-          <div aria-hidden="true" className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.12] text-sand pointer-events-none">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
-              <circle cx="50" cy="50" r="40" />
-              <path d="M10 50h80M50 10v80" />
-              <path d="M20 30c30 0 30 40 60 40" strokeDasharray="2,2" />
-              <path d="M15 70c20-20 50-20 70 0" />
-            </svg>
-          </div>
-          
-          <div className="space-y-1">
-            <span className="font-serif text-3xl font-extrabold text-slate-900/5 tracking-tighter block leading-none select-none">
-              GEOPOLITIQUE
-            </span>
-            <span className="text-[10px] text-slate-600 uppercase tracking-widest block font-bold">
-              Informe Especial
-            </span>
-          </div>
+    <article className="group overflow-hidden rounded-2xl border border-warm-border bg-warm-card shadow-[0_2px_12px_0_rgba(26,28,25,0.06)] hover:shadow-[0_4px_24px_0_rgba(26,28,25,0.10)] transition-shadow duration-300">
+      <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[360px]">
+
+        {/* Left: image */}
+        <div className="lg:col-span-5 relative overflow-hidden min-h-[220px]">
+          {post.image_url ? (
+            <motion.div
+              className="absolute inset-0"
+              whileHover={reduce ? undefined : { scale: 1.04 }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Image
+                src={post.image_url}
+                alt={post.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 560px"
+                priority
+              />
+              {/* Right-side fade for seamless blend into card */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-warm-card/40 hidden lg:block" />
+            </motion.div>
+          ) : (
+            /* Fallback: sage-tinted pattern */
+            <div className="absolute inset-0 bg-sage-subtle">
+              <div aria-hidden="true" className="absolute inset-0 opacity-15"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to right, #2C6B5C 1px, transparent 1px),
+                    linear-gradient(to bottom, #2C6B5C 1px, transparent 1px)
+                  `,
+                  backgroundSize: '48px 48px',
+                }}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Right Side: Editorial Content */}
-        <div className="lg:col-span-8 p-8 md:p-10 flex flex-col justify-between space-y-6">
+        {/* Right: editorial content */}
+        <div className="lg:col-span-7 flex flex-col justify-between p-8 md:p-10 border-t lg:border-t-0 lg:border-l border-warm-border">
+
+          {/* Top: meta + title + summary */}
           <div className="space-y-4">
-            <div className="flex items-center gap-4 text-xs tracking-wider">
-              <span className="font-sans font-bold uppercase text-sand">
+            {/* Badges row */}
+            <div className="flex items-center gap-3">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sage text-white">
                 {post.category}
               </span>
-              <span className="text-slate-300">•</span>
-              <span className="text-slate-600 font-semibold">
+              <span className="text-[11px] text-ink-muted font-medium flex items-center gap-1.5">
+                <Clock weight="regular" className="w-3.5 h-3.5" />
                 {post.read_time} min de lectura
               </span>
             </div>
 
-            <Link href={`/posts/${post.slug}`} className="block group">
-              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 group-hover:text-sand transition-colors duration-300 leading-tight">
+            {/* Title */}
+            <Link href={`/posts/${post.slug}`} className="block group/title">
+              <h2 className="font-serif text-2xl md:text-[1.75rem] lg:text-3xl font-bold text-ink group-hover/title:text-sage transition-colors duration-250 leading-tight">
                 {post.title}
               </h2>
             </Link>
 
-            <p className="text-sm md:text-base leading-relaxed text-slate-600 font-sans">
+            {/* Summary */}
+            <p className="text-ink-secondary text-[0.9375rem] leading-relaxed line-clamp-3">
               {post.summary}
             </p>
           </div>
 
-          <div className="pt-6 border-t border-border-subtle flex items-center justify-between">
-            <span className="text-xs text-slate-600 font-sans">
-              Publicado el {formattedDate}
+          {/* Bottom: date + CTA */}
+          <div className="mt-8 pt-5 border-t border-warm-border flex items-center justify-between">
+            <span className="text-[12px] text-ink-muted">
+              {formattedDate}
             </span>
             <Link
               href={`/posts/${post.slug}`}
               aria-label={`Leer: ${post.title}`}
-              className="flex items-center gap-2 text-sm font-bold tracking-wide text-sand hover:text-slate-900 transition-colors duration-300 font-sans group/link"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sage text-white text-[13px] font-semibold hover:bg-sage-light active:scale-[0.98] transition-all duration-200"
             >
-              Comenzar lectura
-              <svg
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 transform group-hover/link:translate-x-1.5 transition-transform"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              Leer análisis
+              <ArrowRight weight="bold" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
-        </div>
 
+        </div>
       </div>
     </article>
   );
