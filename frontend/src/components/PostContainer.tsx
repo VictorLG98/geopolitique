@@ -149,6 +149,18 @@ export default function PostContainer({ post, allPosts }: PostContainerProps) {
             </article>
           </RevealOnScroll>
 
+          {/* Disclaimer */}
+          <RevealOnScroll delay={0.05}>
+            <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl border border-warm-border bg-warm-surface">
+              <svg className="w-3.5 h-3.5 shrink-0 mt-0.5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z" />
+              </svg>
+              <p className="text-[11.5px] text-ink-muted leading-relaxed">
+                Las opiniones expresadas en este artículo son personales del autor y no representan la posición de ninguna institución, organización o entidad.
+              </p>
+            </div>
+          </RevealOnScroll>
+
           {/* Comments */}
           <RevealOnScroll delay={0.05}>
             <section className="border-t border-warm-border pt-10 space-y-7">
