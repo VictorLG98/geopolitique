@@ -2,31 +2,33 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { motion, useReducedMotion } from 'motion/react';
 import Header from './Header';
 import FeaturedCard from './FeaturedCard';
 import PostCard from './PostCard';
 import Footer from './Footer';
 import SearchOverlay from './SearchOverlay';
+import RevealOnScroll from './RevealOnScroll';
 import { Post } from '@/lib/api';
 
 interface HomeContainerProps {
   initialPosts: Post[];
 }
 
+const CATEGORIES = ['Todos', 'Seguridad', 'Tecnología', 'Economía'];
+
 export default function HomeContainer({ initialPosts }: HomeContainerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  // States
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
+
+  const [posts] = useState<Post[]>(initialPosts);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const reduce = useReducedMotion();
 
-  // Sync category state with URL parameters (for shareable links and navigation)
   useEffect(() => {
     const cat = searchParams.get('category');
     if (cat) {
-      // Normalize casing
       const normalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
       setSelectedCategory(normalized);
     } else {
@@ -34,120 +36,174 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
     }
   }, [searchParams]);
 
-  // Categories list
-  const categories = ['Todos', 'Seguridad', 'Tecnología', 'Economía'];
-
-  // Handle category button click
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
-    if (category === 'Todos') {
-      router.push('/');
-    } else {
-      router.push(`/?category=${category.toLowerCase()}`);
-    }
+    router.push(category === 'Todos' ? '/' : `/?category=${category.toLowerCase()}`);
   };
 
-  // Filter posts based on selected category
-  const filteredPosts = posts.filter((post) => {
-    if (selectedCategory === 'Todos') return true;
-    return post.category.toLowerCase() === selectedCategory.toLowerCase();
-  });
+  const filteredPosts = posts.filter((post) =>
+    selectedCategory === 'Todos'
+      ? true
+      : post.category.toLowerCase() === selectedCategory.toLowerCase()
+  );
 
   const featuredPost = filteredPosts[0];
   const gridPosts = filteredPosts.slice(1);
 
   return (
     <>
-      {/* Header */}
       <Header onSearchClick={() => setIsSearchOpen(true)} />
 
-      {/* Main Content Layout */}
-      <main className="flex-grow mx-auto max-w-6xl w-full px-4 py-8 sm:px-6 lg:px-8 space-y-16 animate-fade-in">
-        
-        {/* Intro Hero Section */}
-        <section className="space-y-4 text-center max-w-2xl mx-auto py-4 animate-fade-in">
-          <span className="text-[10px] uppercase tracking-widest text-sand font-extrabold bg-sand/5 border border-sand/10 px-3 py-1 rounded-full">
-            Inteligencia y Geopolítica
-          </span>
-          <h1 className="font-serif text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-none">
-            Comprender las fuerzas del mañana
-          </h1>
-          <p className="text-sm md:text-base text-slate-650 font-sans max-w-lg mx-auto font-medium">
-            Informes semanales rigurosos sobre las dinámicas de poder global, rutas estratégicas de comercio, cuellos de botella y cadenas críticas de suministro.
-          </p>
+      <main className="flex-grow w-full">
+
+        {/* ── Hero ──────────────────────────────────────────────────────────── */}
+        <section className="relative border-b border-warm-border bg-warm-white">
+          {/* Subtle grid texture */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.035]"
+              style={{
+                backgroundImage: `
+                  linear-gradient(to right, #2C6B5C 1px, transparent 1px),
+                  linear-gradient(to bottom, #2C6B5C 1px, transparent 1px)
+                `,
+                backgroundSize: '64px 64px',
+              }}
+            />
+          </div>
+
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-14 pb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+              {/* Left: headline */}
+              <div className="lg:col-span-7 space-y-5">
+                <motion.div
+                  initial={reduce ? false : { opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <span className="inline-block text-[11px] uppercase tracking-[0.18em] text-sage font-semibold border border-sage/20 bg-sage-subtle px-3 py-1 rounded-full">
+                    Inteligencia Geopolítica
+                  </span>
+                </motion.div>
+
+                <motion.h1
+                  className="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-ink leading-[1.07] tracking-tight"
+                  initial={reduce ? false : { opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  Comprender<br />
+                  <em className="text-sage not-italic">las fuerzas</em><br />
+                  del mañana.
+                </motion.h1>
+
+                <motion.p
+                  className="text-ink-secondary text-base md:text-[1.0625rem] leading-relaxed max-w-[50ch]"
+                  initial={reduce ? false : { opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  Informes semanales sobre dinámicas de poder global, rutas estratégicas de comercio y cadenas críticas de suministro.
+                </motion.p>
+              </div>
+
+              {/* Right: decorative cartographic SVG */}
+              <motion.div
+                aria-hidden="true"
+                className="hidden lg:flex lg:col-span-5 items-center justify-center select-none"
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.4, delay: 0.25 }}
+              >
+                <svg viewBox="0 0 280 240" fill="none" className="w-full max-w-[280px] h-auto opacity-30 text-sage">
+                  <circle cx="140" cy="120" r="96"  stroke="currentColor" strokeWidth="0.75" strokeDasharray="5 7" />
+                  <circle cx="140" cy="120" r="68"  stroke="currentColor" strokeWidth="0.75" />
+                  <circle cx="140" cy="120" r="40"  stroke="currentColor" strokeWidth="0.75" strokeDasharray="3 5" />
+                  <line x1="44"  y1="120" x2="236" y2="120" stroke="currentColor" strokeWidth="0.6" />
+                  <line x1="140" y1="24"  x2="140" y2="216" stroke="currentColor" strokeWidth="0.6" />
+                  <path d="M66 80 Q108 100 140 120 Q176 142 210 132" stroke="currentColor" strokeWidth="1.25" strokeDasharray="4 6" strokeLinecap="round" />
+                  <path d="M52 160 Q96 140 140 120 Q184 102 226 76" stroke="currentColor" strokeWidth="1.25" strokeDasharray="4 6" strokeLinecap="round" />
+                  <circle cx="140" cy="120" r="4.5" fill="currentColor" />
+                  <circle cx="96"  cy="90"  r="3" fill="currentColor" opacity="0.65" />
+                  <circle cx="188" cy="142" r="3" fill="currentColor" opacity="0.65" />
+                  <circle cx="172" cy="84"  r="2" fill="currentColor" opacity="0.45" />
+                  <circle cx="106" cy="155" r="2" fill="currentColor" opacity="0.45" />
+                </svg>
+              </motion.div>
+
+            </div>
+          </div>
         </section>
 
-        {/* Category Filters Bar */}
-        <section className="flex flex-wrap items-center justify-center gap-2 border-y border-border-subtle py-6 animate-fade-in">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleCategorySelect(cat)}
-              aria-current={selectedCategory === cat ? 'true' : undefined}
-              className={`px-4 py-2 text-xs md:text-sm font-bold tracking-wide rounded-lg border font-sans transition-all duration-300 ${
-                selectedCategory === cat
-                  ? 'bg-sand border-sand text-white shadow-lg shadow-sand/10'
-                  : 'bg-obsidian-card/45 border-border-subtle text-slate-600 hover:border-sand/30 hover:text-slate-800'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* ── Category filters ───────────────────────────────────────────────── */}
+        <section className="border-b border-warm-border bg-warm-white sticky top-[60px] z-30">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-1.5 py-2.5 overflow-x-auto">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => handleCategorySelect(cat)}
+                  aria-current={selectedCategory === cat ? 'true' : undefined}
+                  className={[
+                    'px-4 py-1.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap transition-all duration-200',
+                    selectedCategory === cat
+                      ? 'bg-sage text-white shadow-sm'
+                      : 'text-ink-secondary hover:text-ink hover:bg-warm-surface',
+                  ].join(' ')}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
         </section>
 
-        {/* Dynamic Posts Display */}
-        {filteredPosts.length > 0 ? (
-          <div className="space-y-16">
-            {/* Featured Section */}
-            {featuredPost && (
-              <section className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-sand" />
-                  <h2 className="text-xs uppercase tracking-widest text-slate-600 font-bold font-sans">
-                    Análisis Principal
-                  </h2>
-                </div>
-                <FeaturedCard post={featuredPost} />
-              </section>
-            )}
+        {/* ── Posts ──────────────────────────────────────────────────────────── */}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+          {filteredPosts.length > 0 ? (
+            <>
+              {featuredPost && (
+                <RevealOnScroll>
+                  <FeaturedCard post={featuredPost} />
+                </RevealOnScroll>
+              )}
 
-            {/* Grid Section */}
-            {gridPosts.length > 0 && (
-              <section className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-sand" />
-                  <h2 className="text-xs uppercase tracking-widest text-slate-600 font-bold font-sans">
-                    Informes Recientes
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                  {gridPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        ) : (
-          <div className="text-center py-24 text-slate-600 animate-fade-in space-y-3">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
-            <p className="text-base font-semibold">No hay artículos publicados en esta categoría todavía.</p>
-            <p className="text-xs text-slate-600 font-medium">Por favor, consulte de nuevo más tarde o seleccione otra sección.</p>
-          </div>
-        )}
+              {gridPosts.length > 0 && (
+                <section className="space-y-5">
+                  {/* Divider label */}
+                  <div className="flex items-center gap-3">
+                    <span className="h-px flex-1 bg-warm-border" />
+                    <span className="text-[11px] uppercase tracking-[0.16em] text-ink-muted font-semibold px-1">
+                      Informes recientes
+                    </span>
+                    <span className="h-px flex-1 bg-warm-border" />
+                  </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {gridPosts.map((post, i) => (
+                      <RevealOnScroll key={post.id} delay={i * 0.07}>
+                        <PostCard post={post} />
+                      </RevealOnScroll>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-20 space-y-3">
+              <p className="font-serif text-xl text-ink">Sin artículos en esta categoría.</p>
+              <p className="text-ink-muted text-sm">Consulte de nuevo más tarde o seleccione otra sección.</p>
+            </div>
+          )}
+        </div>
       </main>
 
-      {/* Footer */}
       <Footer />
 
-      {/* Search Overlay */}
-      <SearchOverlay 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
-        posts={posts} 
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        posts={posts}
       />
     </>
   );
