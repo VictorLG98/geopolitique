@@ -42,10 +42,8 @@ export default function Header({ onSearchClick }: HeaderProps) {
           {/* Nav */}
           <nav className="hidden md:flex items-center gap-0.5 text-[13px] font-medium">
             {[
-              { href: '/',                    label: 'Inicio' },
-              { href: '/?category=Seguridad', label: 'Seguridad' },
-              { href: '/?category=Tecnologia',label: 'Tecnología' },
-              { href: '/?category=Economia',  label: 'Economía' },
+              { href: '/',          label: 'Inicio' },
+              { href: '/sobre-mi',  label: 'Sobre mí' },
             ].map((item) => (
               <Link
                 key={item.href}
