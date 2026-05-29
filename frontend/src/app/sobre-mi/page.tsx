@@ -33,7 +33,7 @@ export default function SobreMiPage() {
           <section className="space-y-5 text-ink-secondary text-[15px] leading-[1.75]">
             <p>
               {/* Edita este párrafo con tu presentación personal */}
-              Soy [nombre], analista e investigador interesado en las dinámicas geopolíticas del siglo XXI. Este blog nació de la necesidad de explicar, con rigor pero sin tecnicismos innecesarios, los grandes movimientos que definen el orden internacional contemporáneo.
+              Soy Sara Herrero Aina, analista e investigadora en geopolítica. Este blog nació de la necesidad de explicar, con rigor pero sin tecnicismos innecesarios, los grandes movimientos que definen el orden internacional contemporáneo.
             </p>
             <p>
               {/* Edita este párrafo con tu trayectoria o enfoque */}

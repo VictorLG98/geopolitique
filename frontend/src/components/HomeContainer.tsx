@@ -105,6 +105,20 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
                 >
                   Informes semanales sobre dinámicas de poder global, rutas estratégicas de comercio y cadenas críticas de suministro.
                 </motion.p>
+
+                <motion.div
+                  initial={reduce ? false : { opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <a
+                    href="#articulos"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-sage text-white text-[13.5px] font-semibold hover:bg-sage-light active:scale-[0.98] transition-all duration-200"
+                  >
+                    Ver análisis
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg>
+                  </a>
+                </motion.div>
               </div>
 
               {/* Right: decorative cartographic SVG */}
@@ -159,7 +173,7 @@ export default function HomeContainer({ initialPosts }: HomeContainerProps) {
         </section>
 
         {/* ── Posts ──────────────────────────────────────────────────────────── */}
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+        <div id="articulos" className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 space-y-12">
           {filteredPosts.length > 0 ? (
             <>
               {featuredPost && (

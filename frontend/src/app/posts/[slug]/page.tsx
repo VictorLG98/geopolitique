@@ -183,7 +183,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   } catch {
     if (fallback) return buildMeta(fallback);
     return {
-      title: "Artículo no encontrado | Geopolitiqué",
+      title: "Artículo no encontrado",
       description: "Análisis geopolítico",
     };
   }
