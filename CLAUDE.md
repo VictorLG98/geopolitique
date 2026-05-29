@@ -66,3 +66,14 @@ frontend/
 ## Quick Resume Context
 
 Static-feeling blog with admin authoring. Frontend = Next 16 / React 19 / Tailwind 4 / Tiptap. Backend = FastAPI + SQLAlchemy, talks to Neon (Postgres) in prod and SQLite locally. Comments gated by Turnstile; images via Cloudinary; emails via Resend. Recent work has focused on the rich editor (slash menu, image upload) and the admin shell (collapsible sidebar).
+
+## Browser Automation
+
+Use `agent-browser` for web automation. Run `agent-browser --help` for all commands.
+
+Core workflow:
+
+1. `agent-browser open <url>` - Navigate to page
+2. `agent-browser snapshot -i` - Get interactive elements with refs (@e1, @e2)
+3. `agent-browser click @e1` / `fill @e2 "text"` - Interact using refs
+4. Re-snapshot after page changes
