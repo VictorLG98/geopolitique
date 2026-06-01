@@ -3,9 +3,14 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://geopolitique.vercel.app';
+
 export const metadata: Metadata = {
   title: 'Sobre mí',
   description: 'Quién está detrás de Geopolitiqué y por qué este blog.',
+  alternates: {
+    canonical: `${BASE_URL}/sobre-mi`,
+  },
 };
 
 export default function SobreMiPage() {

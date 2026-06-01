@@ -43,7 +43,7 @@
   /* ── Text hierarchy ── */
   --color-ink:           #1A1C19;   /* headings / primary */
   --color-ink-secondary: #505650;   /* body text */
-  --color-ink-muted:     #8B9087;   /* metadata / captions */
+  --color-ink-muted:     #636763;   /* metadata / captions — 4.85:1 contrast on #FAFAF8 */
 
   /* ── Legacy tokens (admin & fallbacks) ── */
   --color-sand:             hsl(243 75% 51%);
