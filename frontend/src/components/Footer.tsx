@@ -40,9 +40,9 @@ export default function Footer() {
             <span className="text-[11px] uppercase tracking-[0.18em] text-sage font-semibold">
               Boletín Semanal
             </span>
-            <h3 className="font-serif text-2xl md:text-[1.625rem] font-bold text-ink">
+            <h2 className="font-serif text-2xl md:text-[1.625rem] font-bold text-ink">
               La Circular de Geopolitiqué
-            </h3>
+            </h2>
             <p className="text-sm text-ink-secondary leading-relaxed max-w-xs">
               Informes exclusivos y análisis estratégicos directamente en su bandeja de entrada. Sin publicidad.
             </p>

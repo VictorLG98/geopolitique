@@ -27,16 +27,16 @@ export default function Markdown({ content }: MarkdownProps) {
           );
         }
 
-        // H3 Header
+        // ### maps to h2 (article title is h1, so section headings are h2)
         if (trimmed.startsWith('### ')) {
           return (
-            <h3 key={index} className="text-xl md:text-2xl font-serif font-bold text-slate-900 mt-8 mb-4 border-b border-border-subtle pb-2">
+            <h2 key={index} className="text-xl md:text-2xl font-serif font-bold text-slate-900 mt-8 mb-4 border-b border-border-subtle pb-2">
               {parseInlineMarkdown(trimmed.substring(4))}
-            </h3>
+            </h2>
           );
         }
 
-        // H2 Header
+        // ## maps to h2 (larger variant)
         if (trimmed.startsWith('## ')) {
           return (
             <h2 key={index} className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mt-10 mb-4 border-b border-border-subtle pb-2">
@@ -45,12 +45,12 @@ export default function Markdown({ content }: MarkdownProps) {
           );
         }
 
-        // H1 Header
+        // # maps to h2 (avoid duplicate h1 with page title)
         if (trimmed.startsWith('# ')) {
           return (
-            <h1 key={index} className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mt-12 mb-6">
+            <h2 key={index} className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mt-12 mb-6">
               {parseInlineMarkdown(trimmed.substring(2))}
-            </h1>
+            </h2>
           );
         }
 
