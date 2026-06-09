@@ -3,7 +3,7 @@ import resend
 import httpx
 import cloudinary
 import cloudinary.uploader
-from fastapi import FastAPI, Depends, HTTPException, Query, Request, Response, status, Header, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Query, Response, status, Header, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
