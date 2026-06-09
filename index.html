@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster - Gestión de Tareas</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .toast-enter { animation: slideIn 0.3s ease-out forwards; }
+        .toast-exit { animation: slideOut 0.3s ease-in forwards; }
+        
+        .task-checkbox:checked + div { text-decoration: line-through; color: #9ca3af; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
+        const { motion, AnimatePresence } = window.Motion;
+        
+        // Iconos SVG inline (fallback si Lucide no carga)
+        const Icons = {
+            Plus: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
+            Trash: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
+            Edit: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>,
+            Check: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>,
+            X: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
+            Search: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>,
+            Sun: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>,
+            Moon: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>,
+            Calendar: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>,
+            Flag: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>,
+            TrendingUp: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>,
+            Clock: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>,
+            CheckCircle: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>,
+            AlertCircle: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
+            Filter: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        };
+
+        // Categorías predefinidas
+        const CATEGORIES = [
+            { id: 'personal', name: 'Personal', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' },
+            { id: 'trabajo', name: 'Trabajo', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+            { id: 'estudios', name: 'Estudios', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
+            { id: 'salud', name: 'Salud', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+            { id: 'finanzas', name: 'Finanzas', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+            { id: 'hogar', name: 'Hogar', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
+        ];
+
+        const PRIORITIES = [
+            { id: 'high', name: 'Alta', color: 'bg-red-500', textColor: 'text-red-600', bgLight: 'bg-red-50 dark:bg-red-900/20' },
+            { id: 'medium', name: 'Media', color: 'bg-amber-500', textColor: 'text-amber-600', bgLight: 'bg-amber-50 dark:bg-amber-900/20' },
+            { id: 'low', name: 'Baja', color: 'bg-green-500', textColor: 'text-green-600', bgLight: 'bg-green-50 dark:bg-green-900/20' },
+        ];
+
+        // Hook para LocalStorage
+        const useLocalStorage = (key, initialValue) => {
+            const [storedValue, setStoredValue] = useState(() => {
+                try {
+                    const item = window.localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    return initialValue;
+                }
+            });
+
+            const setValue = (value) => {
+                try {
+                    const valueToStore = value instanceof Function ? value(storedValue) : value;
+                    setStoredValue(valueToStore);
+                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+
+            return [storedValue, setValue];
+        };
+
+        // Hook para tema oscuro
+        const useDarkMode = () => {
+            const [isDark, setIsDark] = useLocalStorage('darkMode', false);
+            
+            useEffect(() => {
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }, [isDark]);
+            
+            return [isDark, setIsDark];
+        };
+
+        // Sistema de Toast
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            const bgColors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-amber-500'
+            };
+
+            return (
+                <motion.div
+                    initial={{ opacity: 0, x: 100, scale: 0.8 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: 100, scale: 0.8 }}
+                    className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white ${bgColors[type] || bgColors.info}`}
+                >
+                    {type === 'success' && <Icons.CheckCircle />}
+                    {type === 'error' && <Icons.AlertCircle />}
+                    <span className="font-medium text-sm">{message}</span>
+                    <button onClick={onClose} className="ml-2 hover:opacity-70 transition-opacity">
+                        <Icons.X />
+                    </button>
+                </motion.div>
+            );
+        };
+
+        const ToastContainer = ({ toasts, removeToast }) => {
+            return (
+                <AnimatePresence>
+                    {toasts.map(toast => (
+                        <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+                    ))}
+                </AnimatePresence>
+            );
+        };
+
+        // Componente de estadísticas
+        const StatsCard = ({ title, value, icon, color, delay }) => (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay }}
+                className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4"
+            >
+                <div className={`p-3 rounded-lg ${color}`}>
+                    {icon}
+                </div>
+                <div>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
+                </div>
+            </motion.div>
+        );
+
+        // Componente de tarea individual
+        const TaskItem = ({ task, onToggle, onDelete, onEdit, index }) => {
+            const [isExpanded, setIsExpanded] = useState(false);
+            const priority = PRIORITIES.find(p => p.id === task.priority) || PRIORITIES[1];
+            const category = CATEGORIES.find(c => c.id === task.category) || CATEGORIES[0];
+
+            return (
+                <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -100, scale: 0.9 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`group bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 ${task.completed ? 'opacity-75' : ''}`}
+                >
+                    <div className="flex items-start gap-3">
+                        <button
+                            onClick={() => onToggle(task.id)}
+                            className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${task.completed ? 'bg-primary-500 border-primary-500' : 'border-gray-300 dark:border-gray-600 hover:border-primary-400'}`}
+                        >
+                            {task.completed && <Icons.Check />}
+                        </button>
+                        
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className={`font-semibold text-gray-900 dark:text-white transition-all ${task.completed ? 'line-through text-gray-400 dark:text-gray-500' : ''}`}>
+                                    {task.title}
+                                </h3>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${category.color}`}>
+                                    {category.name}
+                                </span>
+                                <span className={`flex items-center gap-1 text-xs font-medium ${priority.textColor}`}>
+                                    <Icons.Flag /> {priority.name}
+                                </span>
+                            </div>
+                            
+                            {task.description && (
+                                <p className={`mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2 ${task.completed ? 'line-through' : ''}`}>
+                                    {task.description}
+                                </p>
+                            )}
+                            
+                            <div className="mt-2 flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                                <span className="flex items-center gap-1">
+                                    <Icons.Calendar />
+                                    {new Date(task.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                </span>
+                                {task.dueDate && (
+                                    <span className={`flex items-center gap-1 ${new Date(task.dueDate) < new Date() && !task.completed ? 'text-red-500 font-medium' : ''}`}>
+                                        <Icons.Clock />
+                                        Vence: {new Date(task.dueDate).toLocaleDateString('es-ES')}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                onClick={() => onEdit(task)}
+                                className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                                title="Editar"
+                            >
+                                <Icons.Edit />
+                            </button>
+                            <button
+                                onClick={() => onDelete(task.id)}
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                title="Eliminar"
+                            >
+                                <Icons.Trash />
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        };
+
+        // Modal para crear/editar tarea
+        const TaskModal = ({ isOpen, onClose, onSave, editTask }) => {
+            const [title, setTitle] = useState('');
+            const [description, setDescription] = useState('');
+            const [category, setCategory] = useState('personal');
+            const [priority, setPriority] = useState('medium');
+            const [dueDate, setDueDate] = useState('');
+
+            useEffect(() => {
+                if (editTask) {
+                    setTitle(editTask.title);
+                    setDescription(editTask.description || '');
+                    setCategory(editTask.category);
+                    setPriority(editTask.priority);
+                    setDueDate(editTask.dueDate || '');
+                } else {
+                    setTitle('');
+                    setDescription('');
+                    setCategory('personal');
+                    setPriority('medium');
+                    setDueDate('');
+                }
+            }, [editTask, isOpen]);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!title.trim()) return;
+                
+                onSave({
+                    id: editTask ? editTask.id : Date.now().toString(),
+                    title: title.trim(),
+                    description: description.trim(),
+                    category,
+                    priority,
+                    dueDate,
+                    completed: editTask ? editTask.completed : false,
+                    createdAt: editTask ? editTask.createdAt : new Date().toISOString(),
+                });
+                onClose();
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                    onClick={onClose}
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        onClick={e => e.stopPropagation()}
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+                    >
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                {editTask ? 'Editar Tarea' : 'Nueva Tarea'}
+                            </h2>
+                            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                <Icons.X />
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
+                                <input
+                                    type="text"
+                                    value={title}
+                                    onChange={e => setTitle(e.target.value)}
+                                    placeholder="¿Qué necesitas hacer?"
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                                    autoFocus
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+                                <textarea
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    placeholder="Añade detalles..."
+                                    rows="3"
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none"
+                                />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
+                                    <select
+                                        value={category}
+                                        onChange={e => setCategory(e.target.value)}
+                                        className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                                    >
+                                        {CATEGORIES.map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioridad</label>
+                                    <select
+                                        value={priority}
+                                        onChange={e => setPriority(e.target.value)}
+                                        className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                                    >
+                                        {PRIORITIES.map(p => (
+                                            <option key={p.id} value={p.id}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de vencimiento</label>
+                                <input
+                                    type="date"
+                                    value={dueDate}
+                                    onChange={e => setDueDate(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                                />
+                            </div>
+                            
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition-colors shadow-lg shadow-primary-500/30"
+                                >
+                                    {editTask ? 'Guardar Cambios' : 'Crear Tarea'}
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </motion.div>
+            );
+        };
+
+        // Componente principal
+        const TaskMaster = () => {
+            const [tasks, setTasks] = useLocalStorage('tasks', [
+                { id: '1', title: 'Diseñar la interfaz de la app', description: 'Crear mockups en Figma para la nueva versión', category: 'trabajo', priority: 'high', completed: false, createdAt: '2024-01-15T10:00:00Z', dueDate: '2024-01-20' },
+                { id: '2', title: 'Comprar víveres', description: 'Leche, pan, huevos, frutas', category: 'hogar', priority: 'medium', completed: false, createdAt: '2024-01-15T11:00:00Z' },
+                { id: '3', title: 'Estudiar React hooks', description: 'Repasar useEffect y useCallback', category: 'estudios', priority: 'high', completed: true, createdAt: '2024-01-14T09:00:00Z' },
+                { id: '4', title: 'Llamar al médico', category: 'salud', priority: 'low', completed: false, createdAt: '2024-01-15T12:00:00Z', dueDate: '2024-01-18' },
+            ]);
+            const [filter, setFilter] = useState('all'); // all, active, completed
+            const [searchQuery, setSearchQuery] = useState('');
+            const [categoryFilter, setCategoryFilter] = useState('all');
+            const [isModalOpen, setIsModalOpen] = useState(false);
+            const [editingTask, setEditingTask] = useState(null);
+            const [toasts, setToasts] = useState([]);
+            const [isDark, setIsDark] = useDarkMode();
+
+            const addToast = (message, type = 'info') => {
+                const id = Date.now();
+                setToasts(prev => [...prev, { id, message, type }]);
+            };
+
+            const removeToast = (id) => {
+                setToasts(prev => prev.filter(t => t.id !== id));
+            };
+
+            const filteredTasks = tasks.filter(task => {
+                const matchesFilter = filter === 'all' || (filter === 'active' && !task.completed) || (filter === 'completed' && task.completed);
+                const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                    task.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesCategory = categoryFilter === 'all' || task.category === categoryFilter;
+                return matchesFilter && matchesSearch && matchesCategory;
+            });
+
+            const stats = {
+                total: tasks.length,
+                completed: tasks.filter(t => t.completed).length,
+                active: tasks.filter(t => !t.completed).length,
+                highPriority: tasks.filter(t => t.priority === 'high' && !t.completed).length
+            };
+
+            const handleAddTask = (task) => {
+                if (editingTask) {
+                    setTasks(prev => prev.map(t => t.id === task.id ? task : t));
+                    addToast('Tarea actualizada correctamente', 'success');
+                } else {
+                    setTasks(prev => [task, ...prev]);
+                    addToast('Tarea creada exitosamente', 'success');
+                }
+                setEditingTask(null);
+            };
+
+            const handleToggle = (id) => {
+                setTasks(prev => prev.map(t => {
+                    if (t.id === id) {
+                        const newState = !t.completed;
+                        addToast(newState ? '¡Tarea completada! 🎉' : 'Tarea marcada como pendiente', 'success');
+                        return { ...t, completed: newState };
+                    }
+                    return t;
+                }));
+            };
+
+            const handleDelete = (id) => {
+                if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+                    setTasks(prev => prev.filter(t => t.id !== id));
+                    addToast('Tarea eliminada', 'info');
+                }
+            };
+
+            const handleEdit = (task) => {
+                setEditingTask(task);
+                setIsModalOpen(true);
+            };
+
+            const clearCompleted = () => {
+                const completedCount = tasks.filter(t => t.completed).length;
+                if (completedCount === 0) {
+                    addToast('No hay tareas completadas para eliminar', 'warning');
+                    return;
+                }
+                if (confirm(`¿Eliminar ${completedCount} tarea(s) completada(s)?`)) {
+                    setTasks(prev => prev.filter(t => !t.completed));
+                    addToast(`${completedCount} tareas eliminadas`, 'info');
+                }
+            };
+
+            const filters = [
+                { id: 'all', label: 'Todas', count: tasks.length },
+                { id: 'active', label: 'Activas', count: tasks.filter(t => !t.completed).length },
+                { id: 'completed', label: 'Completadas', count: tasks.filter(t => t.completed).length },
+            ];
+
+            return (
+                <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+                    <ToastContainer toasts={toasts} removeToast={removeToast} />
+                    
+                    {/* Header */}
+                    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+                        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+                                    <Icons.CheckCircle />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">TaskMaster</h1>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Gestiona tu día a día</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsDark(!isDark)}
+                                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            >
+                                {isDark ? <Icons.Sun /> : <Icons.Moon />}
+                            </button>
+                        </div>
+                    </header>
+
+                    <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <StatsCard title="Total" value={stats.total} icon={<Icons.TrendingUp />} color="bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400" delay={0} />
+                            <StatsCard title="Activas" value={stats.active} icon={<Icons.Clock />} color="bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" delay={0.1} />
+                            <StatsCard title="Completadas" value={stats.completed} icon={<Icons.CheckCircle />} color="bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" delay={0.2} />
+                            <StatsCard title="Alta Prioridad" value={stats.highPriority} icon={<Icons.AlertCircle />} color="bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" delay={0.3} />
+                        </div>
+
+                        {/* Controls */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
+                            <div className="flex flex-col md:flex-row gap-4">
+                                {/* Search */}
+                                <div className="relative flex-1">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                        <Icons.Search />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar tareas..."
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                                    />
+                                </div>
+                                
+                                {/* Category Filter */}
+                                <div className="flex items-center gap-2">
+                                    <Icons.Filter />
+                                    <select
+                                        value={categoryFilter}
+                                        onChange={e => setCategoryFilter(e.target.value)}
+                                        className="px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                                    >
+                                        <option value="all">Todas las categorías</option>
+                                        {CATEGORIES.map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Add Button */}
+                                <button
+                                    onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
+                                    className="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 active:scale-95"
+                                >
+                                    <Icons.Plus /> Nueva Tarea
+                                </button>
+                            </div>
+
+                            {/* Filter Tabs */}
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                                <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                                    {filters.map(f => (
+                                        <button
+                                            key={f.id}
+                                            onClick={() => setFilter(f.id)}
+                                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${filter === f.id ? 'bg-white dark:bg-gray-600 text-primary-600 dark:text-primary-400 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'}`}
+                                        >
+                                            {f.label} <span className="text-xs opacity-60">({f.count})</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                
+                                {tasks.some(t => t.completed) && (
+                                    <button
+                                        onClick={clearCompleted}
+                                        className="text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition-colors"
+                                    >
+                                        Limpiar completadas
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Task List */}
+                        <div className="space-y-3">
+                            <AnimatePresence mode="popLayout">
+                                {filteredTasks.length === 0 ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="text-center py-16"
+                                    >
+                                        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <Icons.Search />
+                                        </div>
+                                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                                            {searchQuery ? 'No se encontraron tareas' : filter === 'completed' ? 'No hay tareas completadas' : 'No hay tareas pendientes'}
+                                        </h3>
+                                        <p className="text-gray-500 dark:text-gray-400">
+                                            {searchQuery ? 'Intenta con otros términos de búsqueda' : '¡Crea tu primera tarea para empezar!'}
+                                        </p>
+                                    </motion.div>
+                                ) : (
+                                    filteredTasks.map((task, index) => (
+                                        <TaskItem
+                                            key={task.id}
+                                            task={task}
+                                            index={index}
+                                            onToggle={handleToggle}
+                                            onDelete={handleDelete}
+                                            onEdit={handleEdit}
+                                        />
+                                    ))
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </main>
+
+                    {/* Modal */}
+                    <AnimatePresence>
+                        {isModalOpen && (
+                            <TaskModal
+                                isOpen={isModalOpen}
+                                onClose={() => { setIsModalOpen(false); setEditingTask(null); }}
+                                onSave={handleAddTask}
+                                editTask={editingTask}
+                            />
+                        )}
+                    </AnimatePresence>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TaskMaster />);
+    </script>
+</body>
+</html>
