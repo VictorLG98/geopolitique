@@ -260,8 +260,9 @@ export default function RichEditor({ value, onChange, placeholder, onUploadImage
     }
   }
 
+  const triggerImgInput = useCallback(() => imgInputRef.current?.click(), []);
   // Build slash commands once
-  const allCommands = useMemo<MenuItem[]>(() => buildCommands(() => imgInputRef.current?.click()), []);
+  const allCommands = useMemo<MenuItem[]>(() => buildCommands(triggerImgInput), [triggerImgInput]);
 
   // Filter commands by query
   function filterCommands(query: string): SlashCommand[] {
