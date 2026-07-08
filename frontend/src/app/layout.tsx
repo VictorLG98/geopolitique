@@ -64,7 +64,17 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${cormorant.variable} ${dmSans.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          // Set the theme before first paint to avoid a flash of the wrong theme.
+          // Default is always light; dark only if the user explicitly chose it.
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=localStorage.getItem('theme')==='dark';var r=document.documentElement;if(d){r.classList.add('dark');}r.style.colorScheme=d?'dark':'light';}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans bg-warm-white text-ink selection:bg-sage/15 selection:text-sage-dark">
         {children}
       </body>

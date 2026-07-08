@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
+/* Class-based dark mode — enables dark: utilities against html.dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ── CSS variables (legacy - kept for admin compatibility) ────────────────── */
 :root {
+  color-scheme: light;
   --bg-paper: 80 5% 97%;
   --bg-card: 0 0% 100%;
   --bg-card-hover: 45 8% 95%;
@@ -350,3 +354,161 @@
 .prose strong { color: hsl(var(--text-primary)) !important; }
 .prose h1, .prose h2, .prose h3 { color: hsl(var(--text-primary)) !important; }
 .prose p { color: hsl(24 10% 25%) !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   DARK MODE  (class-based — <html class="dark"> toggled by ThemeToggle)
+
+   Semantic Tailwind tokens are redefined here so every utility that
+   references them (bg-warm-white, text-ink, border-warm-border, …)
+   flips automatically. Surfaces with hardcoded hex get explicit
+   overrides below. This block sits after @theme so it wins the cascade.
+   ══════════════════════════════════════════════════════════════════ */
+.dark {
+  color-scheme: dark;
+
+  /* ── Warm dark surfaces ── */
+  --color-warm-white:        #121311;   /* page canvas */
+  --color-warm-surface:      #191A16;   /* alternate section bg */
+  --color-warm-card:         #1C1D19;   /* card / elevated surface */
+  --color-warm-card-hover:   #232420;   /* card hover state */
+
+  /* ── Borders ── */
+  --color-warm-border:        #2C2E28;
+  --color-warm-border-strong: #3C3E37;
+
+  /* ── Sage green – lifted for AA contrast on dark ── */
+  --color-sage:        #59A892;   /* primary interactive / accent */
+  --color-sage-light:  #6FBCA6;   /* hover */
+  --color-sage-dark:   #7EC9B3;   /* strong / pressed text on dark */
+  --color-sage-subtle: #17302A;   /* very dark sage tint */
+
+  /* ── Text hierarchy (inverted) ── */
+  --color-ink:           #F1F0E9;   /* headings / primary */
+  --color-ink-secondary: #C4C6BB;   /* body text */
+  --color-ink-muted:     #8F9288;   /* metadata / captions */
+
+  /* ── Legacy HSL tokens (admin surfaces) ── */
+  --bg-paper: 100 4% 8%;
+  --bg-card: 100 4% 11%;
+  --bg-card-hover: 100 4% 14%;
+  --text-primary: 60 6% 92%;
+  --text-muted: 100 4% 62%;
+  --border-subtle: 100 5% 20%;
+  --border-focus: 163 38% 45%;
+  --color-clay: 163 38% 48%;
+  --color-clay-light: 163 38% 56%;
+  --color-clay-dark: 163 38% 62%;
+}
+
+/* ── Scrollbar ── */
+.dark ::-webkit-scrollbar-track { background: #191A16; }
+.dark ::-webkit-scrollbar-thumb { background: #3C3E37; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #59A89260; }
+
+/* ── Warm inputs (public comment form) ── */
+.dark .warm-input {
+  background: #1C1D19;
+  border-color: #2C2E28;
+  color: #F1F0E9;
+}
+.dark .warm-input::placeholder { color: #8F9288; }
+.dark .warm-input:focus {
+  border-color: #59A892;
+  box-shadow: 0 0 0 3px #59A89226;
+  background: #232420;
+}
+
+/* ── Admin glass panel / elegant input ── */
+.dark .glass-panel {
+  background: rgba(28, 29, 25, 0.75);
+  border-color: rgba(89, 168, 146, 0.12);
+}
+.dark .glass-panel:hover {
+  border-color: rgba(89, 168, 146, 0.28);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+.dark .elegant-input {
+  background: rgba(25, 26, 22, 0.6);
+  border-color: rgba(60, 62, 55, 0.9);
+}
+.dark .elegant-input:focus {
+  background: rgba(35, 36, 32, 0.95);
+}
+
+/* ── Public rich content (post reading surface) ── */
+.dark .rich-content { color: #C4C6BB; }
+.dark .rich-content h1,
+.dark .rich-content h2,
+.dark .rich-content h3,
+.dark .rich-content strong { color: #F1F0E9; }
+.dark .rich-content p,
+.dark .rich-content li,
+.dark .rich-content td { color: #C4C6BB; }
+.dark .rich-content a { color: #6FBCA6; }
+.dark .rich-content a:hover { color: #8ED4BF; }
+.dark .rich-content blockquote {
+  border-left-color: #59A892;
+  color: #A9AC9F;
+  background: #17302A;
+}
+.dark .rich-content code {
+  background: #232420;
+  border-color: #2C2E28;
+  color: #7EC9B3;
+}
+.dark .rich-content hr { border-top-color: #2C2E28; }
+.dark .rich-content img { border-color: #2C2E28; }
+.dark .rich-content th {
+  background: #232420;
+  border-color: #2C2E28;
+  color: #F1F0E9;
+}
+.dark .rich-content td { border-color: #2C2E28; }
+.dark .rich-content mark { background: #59A89233; }
+
+/* ── Admin editor (Tiptap) — hardcoded body text colors ── */
+.dark .ProseMirror p,
+.dark .ProseMirror li,
+.dark .prose p { color: #C4C6BB !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   THEME TOGGLE — circular reveal (View Transitions API)
+   Adapted from theme-toggle.rdsx.dev "circle" variant: the outgoing
+   view stays static (animation: none) while the incoming theme is
+   revealed by a circular mask that scales out from the center.
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+  --expo-out: linear(
+    0 0%, 0.1684 2.66%, 0.3165 5.49%, 0.446 8.52%, 0.5581 11.78%,
+    0.6535 15.29%, 0.7341 19.11%, 0.8011 23.3%, 0.8557 27.93%,
+    0.8962 32.68%, 0.9283 38.01%, 0.9529 44.08%, 0.9711 51.14%,
+    0.9833 59.06%, 0.9915 68.74%, 1 100%
+  );
+}
+
+::view-transition-group(root) {
+  animation-timing-function: var(--expo-out);
+}
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: none;
+  animation-fill-mode: both;
+  z-index: -1;
+}
+::view-transition-new(root) {
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="white"/></svg>') center / 0 no-repeat;
+  animation: theme-reveal 1s;
+  animation-fill-mode: both;
+}
+@keyframes theme-reveal {
+  to { mask-size: 200vmax; }
+}
+
+/* Respect reduced-motion: no circular sweep, instant swap */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}

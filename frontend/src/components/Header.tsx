@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MagnifyingGlass } from '@phosphor-icons/react';
+import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
   onSearchClick?: () => void;
@@ -55,8 +56,8 @@ export default function Header({ onSearchClick }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Search */}
-          <div className="flex items-center shrink-0">
+          {/* Search + theme toggle */}
+          <div className="flex items-center gap-2 shrink-0">
             {onSearchClick && (
               <button
                 onClick={onSearchClick}
@@ -67,6 +68,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
                 <span className="hidden sm:inline">Buscar</span>
               </button>
             )}
+            <ThemeToggle />
           </div>
 
         </div>
