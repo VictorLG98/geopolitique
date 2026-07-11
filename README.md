@@ -13,4 +13,4 @@ Blog/publication site with a public reading surface and an admin authoring inter
 | Email | Resend |
 | Images | Cloudinary |
 | Anti-bot | Cloudflare Turnstile |
-| Hosting | Frontend → Vercel · Backend → Railway |
+| Hosting | Frontend → Vercel · Backend → Render |
