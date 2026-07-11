@@ -1,0 +1,25 @@
+name: Keep Render backend warm
+
+# El plan gratuito de Render duerme el servicio tras ~15 min sin tráfico, lo que
+# provoca un arranque en frío (~30-50s) para el primer visitante. Este ping
+# periódico a /health lo mantiene despierto. Como bonus: si el backend está
+# realmente caído, `curl -f` hace fallar el job y GitHub te avisa por email.
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # cada 10 min (margen frente al sleep de 15 min)
+  workflow_dispatch:          # permite lanzarlo a mano desde la pestaña Actions
+
+# Evita que se acumulen ejecuciones si una tarda por un arranque en frío.
+concurrency:
+  group: keep-warm
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health
+        run: |
+          curl -sSf --retry 3 --retry-delay 20 --retry-all-errors \
+            --max-time 90 \
+            https://geopolitique-api.onrender.com/health
