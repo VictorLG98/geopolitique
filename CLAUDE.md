@@ -13,7 +13,7 @@ Blog/publication site with a public reading surface and an admin authoring surfa
 | Email | Resend |
 | Images | Cloudinary (SDK reads `CLOUDINARY_URL`) |
 | Anti-bot | Cloudflare Turnstile (server-side verify in backend) |
-| Hosting | Backend → Railway (`backend/Procfile`, `railway.toml`). Frontend → Vercel. |
+| Hosting | Backend → Render (`render.yaml` Blueprint at repo root). Frontend → Vercel. DB → Neon (Postgres). |
 
 ## Paths
 
@@ -25,7 +25,7 @@ backend/
     models.py      ORM models
     schemas.py     Pydantic schemas
     seed.py        Auto-seed on startup
-  Procfile, railway.toml, requirements.txt, geopolitique.db (local)
+  requirements.txt, geopolitique.db (local)  ·  render.yaml lives at repo root (Procfile/railway.toml are legacy, ignored by Render)
 frontend/
   src/
     app/           Next App Router — `/` (home), `/posts/...`, `/admin/...`
@@ -60,7 +60,7 @@ frontend/
 ## Key References
 
 - Frontend deploy: Vercel (`FRONTEND_URL` defaults to `https://geopolitique.vercel.app`).
-- Backend deploy: Railway (`backend/railway.toml`, `backend/Procfile`).
+- Backend deploy: Render (`render.yaml` Blueprint at repo root; `rootDir: backend`, health check `/health`, Python pinned via `backend/.python-version`). The 7 env vars are set in the Render dashboard (declared `sync: false`). Migrated off Railway 2026-07 — `backend/railway.toml` and `backend/Procfile` are legacy and ignored.
 - Editor docs: Tiptap v3 (`@tiptap/*` 3.23.x).
 
 ## Quick Resume Context
