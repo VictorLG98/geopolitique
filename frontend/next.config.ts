@@ -13,7 +13,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://challenges.cloudflare.com https://*.railway.app http://localhost:8000",
+  "connect-src 'self' https://challenges.cloudflare.com https://*.onrender.com http://localhost:8000",
   "frame-src https://challenges.cloudflare.com",
   "worker-src blob: 'self'",
   "object-src 'none'",

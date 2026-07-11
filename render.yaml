@@ -1,0 +1,32 @@
+# Render Blueprint — despliegue del backend FastAPI de Geopolitiqué.
+# La base de datos NO se define aquí: sigue en Neon (Postgres). Solo migramos
+# el proceso web. Las variables marcadas con `sync: false` se rellenan a mano
+# en el dashboard de Render (son secretos, no se versionan).
+services:
+  - type: web
+    name: geopolitique-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Render 3.14 aún no es estable; fijamos 3.13 para un build reproducible.
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      # DATABASE_URL apunta a Neon. SIN esto el backend cae a SQLite efímero.
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
