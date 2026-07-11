@@ -25,7 +25,15 @@ except Exception as e:
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM = os.getenv("RESEND_FROM", "Geopolitiqué <onboarding@resend.dev>")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://geopolitique.vercel.app")
+# FRONTEND_URL admite varios orígenes separados por comas (producción +
+# dominio propio, etc.). Se normaliza la barra final: el navegador nunca la
+# envía en el header Origin, así que un '/' de más rompe el preflight de CORS.
+_FRONTEND_ORIGINS = [
+    o.strip().rstrip("/")
+    for o in os.getenv("FRONTEND_URL", "https://geopolitique.vercel.app").split(",")
+    if o.strip()
+]
+FRONTEND_URL = _FRONTEND_ORIGINS[0] if _FRONTEND_ORIGINS else "https://geopolitique.vercel.app"
 
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
@@ -59,7 +67,7 @@ app = FastAPI(
 
 # Enable CORS — restrict to known origins in production
 _ALLOWED_ORIGINS = [
-    FRONTEND_URL,
+    *_FRONTEND_ORIGINS,
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
